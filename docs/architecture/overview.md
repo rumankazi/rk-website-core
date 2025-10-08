@@ -268,20 +268,17 @@ graph LR
 ### Defense in Depth
 
 1. **Network Layer**
-
    - VPC with private subnets
    - Cloud Armor DDoS protection
    - HTTPS everywhere with automatic SSL
 
 2. **Application Layer**
-
    - Input validation (Zod schemas)
    - Output encoding (React default)
    - Authentication (Auth.js)
    - Authorization (role-based)
 
 3. **Data Layer**
-
    - Encrypted at rest and in transit
    - Parameterized queries (Prisma)
    - Backup encryption
@@ -298,14 +295,12 @@ graph LR
 ### Three Pillars Implementation
 
 1. **Metrics** (Prometheus + Grafana)
-
    - Application performance metrics
    - Business KPI tracking
    - Infrastructure monitoring
    - Custom dashboards
 
 2. **Logs** (Cloud Logging + structured logging)
-
    - Application logs with correlation IDs
    - Audit logs for security events
    - Error logs with stack traces

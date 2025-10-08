@@ -1,0 +1,9 @@
+# Run lint-staged for staged files (includes linting, formatting, and testing changed files)
+echo "🔍 Running lint-staged (lint, format, test changed files)..."
+pnpm exec lint-staged
+
+# Fast type checking (skip lib checks for speed)
+echo "⚡ Fast type checking..."
+pnpm type-check:fast
+
+echo "✅ Pre-commit checks passed!"

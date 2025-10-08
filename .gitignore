@@ -35,6 +35,10 @@ jspm_packages/
 *.tsbuildinfo
 .tsc-cache/
 
+# Cache directories
+node_modules/.cache/
+.cache/
+
 # Optional npm cache directory
 .npm
 

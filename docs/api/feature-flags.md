@@ -7,26 +7,26 @@ The feature flag system enables gradual feature rollouts, A/B testing, and emerg
 ```typescript
 // Feature flag configuration
 interface FeatureFlag {
-  key: string;
-  enabled: boolean;
-  rolloutPercentage: number;
-  rules: FeatureFlagRules;
-  createdAt: Date;
-  updatedAt: Date;
+  key: string
+  enabled: boolean
+  rolloutPercentage: number
+  rules: FeatureFlagRules
+  createdAt: Date
+  updatedAt: Date
 }
 
 interface FeatureFlagRules {
-  userIds?: string[]; // Specific user IDs
-  userRoles?: string[]; // User roles (admin, beta, etc.)
-  environments?: string[]; // Environment restrictions
-  regions?: string[]; // Geographic restrictions
-  timeWindows?: TimeWindow[]; // Time-based activation
+  userIds?: string[] // Specific user IDs
+  userRoles?: string[] // User roles (admin, beta, etc.)
+  environments?: string[] // Environment restrictions
+  regions?: string[] // Geographic restrictions
+  timeWindows?: TimeWindow[] // Time-based activation
 }
 
 interface TimeWindow {
-  start: Date;
-  end: Date;
-  timezone: string;
+  start: Date
+  end: Date
+  timezone: string
 }
 ```
 
@@ -39,13 +39,13 @@ interface TimeWindow {
 ```typescript
 // src/lib/feature-flags.ts
 const FEATURE_FLAGS = {
-  NEW_DASHBOARD: process.env.FEATURE_NEW_DASHBOARD === "true",
-  BETA_API: process.env.FEATURE_BETA_API === "true",
-  ADVANCED_ANALYTICS: process.env.FEATURE_ADVANCED_ANALYTICS === "true",
-} as const;
+  NEW_DASHBOARD: process.env.FEATURE_NEW_DASHBOARD === 'true',
+  BETA_API: process.env.FEATURE_BETA_API === 'true',
+  ADVANCED_ANALYTICS: process.env.FEATURE_ADVANCED_ANALYTICS === 'true',
+} as const
 
 export function isFeatureEnabled(flag: keyof typeof FEATURE_FLAGS): boolean {
-  return FEATURE_FLAGS[flag] ?? false;
+  return FEATURE_FLAGS[flag] ?? false
 }
 ```
 
@@ -70,23 +70,23 @@ export function DashboardPage() {
 // src/lib/feature-flags/types.ts
 export interface FeatureFlagContext {
   user?: {
-    id: string;
-    role: string;
-    email: string;
-  };
-  environment: string;
-  region?: string;
+    id: string
+    role: string
+    email: string
+  }
+  environment: string
+  region?: string
 }
 
 export interface FeatureFlagConfig {
-  enabled: boolean;
-  rolloutPercentage: number;
+  enabled: boolean
+  rolloutPercentage: number
   rules: {
-    userIds?: string[];
-    userRoles?: string[];
-    betaUsers?: boolean;
-    adminOnly?: boolean;
-  };
+    userIds?: string[]
+    userRoles?: string[]
+    betaUsers?: boolean
+    adminOnly?: boolean
+  }
 }
 ```
 
@@ -94,7 +94,7 @@ export interface FeatureFlagConfig {
 
 ```typescript
 // src/lib/feature-flags/evaluator.ts
-import { FeatureFlagContext, FeatureFlagConfig } from "./types";
+import { FeatureFlagContext, FeatureFlagConfig } from './types'
 
 export async function evaluateFeatureFlag(
   flagKey: string,
@@ -102,47 +102,47 @@ export async function evaluateFeatureFlag(
   config: FeatureFlagConfig
 ): Promise<boolean> {
   // If flag is globally disabled, return false
-  if (!config.enabled) return false;
+  if (!config.enabled) return false
 
   // Check user-specific rules first
-  if (config.rules.userIds?.includes(context.user?.id || "")) {
-    return true;
+  if (config.rules.userIds?.includes(context.user?.id || '')) {
+    return true
   }
 
   // Check role-based rules
-  if (config.rules.userRoles?.includes(context.user?.role || "")) {
-    return true;
+  if (config.rules.userRoles?.includes(context.user?.role || '')) {
+    return true
   }
 
   // Admin-only flag
-  if (config.rules.adminOnly && context.user?.role === "admin") {
-    return true;
+  if (config.rules.adminOnly && context.user?.role === 'admin') {
+    return true
   }
 
   // Beta users flag
-  if (config.rules.betaUsers && context.user?.role === "beta") {
-    return true;
+  if (config.rules.betaUsers && context.user?.role === 'beta') {
+    return true
   }
 
   // Percentage-based rollout
   if (config.rolloutPercentage > 0 && context.user) {
-    const userHash = hashUserId(context.user.id);
-    const userPercentile = userHash % 100;
-    return userPercentile < config.rolloutPercentage;
+    const userHash = hashUserId(context.user.id)
+    const userPercentile = userHash % 100
+    return userPercentile < config.rolloutPercentage
   }
 
-  return false;
+  return false
 }
 
 function hashUserId(userId: string): number {
   // Simple hash function for consistent user assignment
-  let hash = 0;
+  let hash = 0
   for (let i = 0; i < userId.length; i++) {
-    const char = userId.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32-bit integer
+    const char = userId.charCodeAt(i)
+    hash = (hash << 5) - hash + char
+    hash = hash & hash // Convert to 32-bit integer
   }
-  return Math.abs(hash);
+  return Math.abs(hash)
 }
 ```
 
@@ -188,48 +188,48 @@ model FeatureFlagEvent {
 
 ```typescript
 // src/lib/feature-flags/service.ts
-import { db } from "@/lib/db";
-import { FeatureFlagContext } from "./types";
-import { evaluateFeatureFlag } from "./evaluator";
+import { db } from '@/lib/db'
+import { FeatureFlagContext } from './types'
+import { evaluateFeatureFlag } from './evaluator'
 
 export class FeatureFlagService {
-  private cache = new Map<string, any>();
-  private cacheExpiry = new Map<string, number>();
-  private readonly CACHE_TTL = 60000; // 1 minute
+  private cache = new Map<string, any>()
+  private cacheExpiry = new Map<string, number>()
+  private readonly CACHE_TTL = 60000 // 1 minute
 
   async getFlag(key: string): Promise<any> {
-    const cached = this.cache.get(key);
-    const expiry = this.cacheExpiry.get(key);
+    const cached = this.cache.get(key)
+    const expiry = this.cacheExpiry.get(key)
 
     if (cached && expiry && Date.now() < expiry) {
-      return cached;
+      return cached
     }
 
     const flag = await db.featureFlag.findUnique({
       where: { key },
-    });
+    })
 
     if (flag) {
-      this.cache.set(key, flag);
-      this.cacheExpiry.set(key, Date.now() + this.CACHE_TTL);
+      this.cache.set(key, flag)
+      this.cacheExpiry.set(key, Date.now() + this.CACHE_TTL)
     }
 
-    return flag;
+    return flag
   }
 
   async isEnabled(key: string, context: FeatureFlagContext): Promise<boolean> {
-    const flag = await this.getFlag(key);
+    const flag = await this.getFlag(key)
 
     if (!flag) {
-      console.warn(`Feature flag "${key}" not found`);
-      return false;
+      console.warn(`Feature flag "${key}" not found`)
+      return false
     }
 
     return evaluateFeatureFlag(key, context, {
       enabled: flag.enabled,
       rolloutPercentage: flag.rolloutPercentage,
       rules: flag.rules,
-    });
+    })
   }
 
   async updateFlag(
@@ -237,31 +237,31 @@ export class FeatureFlagService {
     updates: Partial<any>,
     changedBy: string
   ): Promise<void> {
-    const current = await this.getFlag(key);
+    const current = await this.getFlag(key)
 
     await db.featureFlag.update({
       where: { key },
       data: updates,
-    });
+    })
 
     // Log the change
     await db.featureFlagEvent.create({
       data: {
         flagId: current.id,
-        eventType: "rule_updated",
+        eventType: 'rule_updated',
         oldValue: current,
         newValue: { ...current, ...updates },
         changedBy,
       },
-    });
+    })
 
     // Clear cache
-    this.cache.delete(key);
-    this.cacheExpiry.delete(key);
+    this.cache.delete(key)
+    this.cacheExpiry.delete(key)
   }
 }
 
-export const featureFlagService = new FeatureFlagService();
+export const featureFlagService = new FeatureFlagService()
 ```
 
 ### Phase 4: Redis-Backed Real-Time Flags
@@ -270,30 +270,30 @@ export const featureFlagService = new FeatureFlagService();
 
 ```typescript
 // src/lib/feature-flags/redis-service.ts
-import Redis from "ioredis";
-import { FeatureFlagService } from "./service";
+import Redis from 'ioredis'
+import { FeatureFlagService } from './service'
 
 export class RedisFeatureFlagService extends FeatureFlagService {
-  private redis: Redis;
+  private redis: Redis
 
   constructor() {
-    super();
-    this.redis = new Redis(process.env.REDIS_URL!);
-    this.setupSubscription();
+    super()
+    this.redis = new Redis(process.env.REDIS_URL!)
+    this.setupSubscription()
   }
 
   private setupSubscription() {
-    const subscriber = new Redis(process.env.REDIS_URL!);
-    subscriber.subscribe("feature-flags:updates");
+    const subscriber = new Redis(process.env.REDIS_URL!)
+    subscriber.subscribe('feature-flags:updates')
 
-    subscriber.on("message", (channel, message) => {
-      if (channel === "feature-flags:updates") {
-        const { key } = JSON.parse(message);
+    subscriber.on('message', (channel, message) => {
+      if (channel === 'feature-flags:updates') {
+        const { key } = JSON.parse(message)
         // Clear cache for updated flag
-        this.cache.delete(key);
-        this.cacheExpiry.delete(key);
+        this.cache.delete(key)
+        this.cacheExpiry.delete(key)
       }
-    });
+    })
   }
 
   async updateFlag(
@@ -301,10 +301,10 @@ export class RedisFeatureFlagService extends FeatureFlagService {
     updates: any,
     changedBy: string
   ): Promise<void> {
-    await super.updateFlag(key, updates, changedBy);
+    await super.updateFlag(key, updates, changedBy)
 
     // Notify all instances
-    await this.redis.publish("feature-flags:updates", JSON.stringify({ key }));
+    await this.redis.publish('feature-flags:updates', JSON.stringify({ key }))
   }
 }
 ```
@@ -315,21 +315,21 @@ export class RedisFeatureFlagService extends FeatureFlagService {
 
 ```typescript
 // src/hooks/useFeatureFlag.ts
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import { featureFlagService } from "@/lib/feature-flags/service";
+import { useSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
+import { featureFlagService } from '@/lib/feature-flags/service'
 
 export function useFeatureFlag(flagKey: string): boolean {
-  const { data: session } = useSession();
-  const [enabled, setEnabled] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const { data: session } = useSession()
+  const [enabled, setEnabled] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function checkFlag() {
       if (!session?.user) {
-        setEnabled(false);
-        setLoading(false);
-        return;
+        setEnabled(false)
+        setLoading(false)
+        return
       }
 
       try {
@@ -340,21 +340,21 @@ export function useFeatureFlag(flagKey: string): boolean {
             email: session.user.email,
           },
           environment: process.env.NODE_ENV,
-        });
+        })
 
-        setEnabled(result);
+        setEnabled(result)
       } catch (error) {
-        console.error(`Error checking feature flag ${flagKey}:`, error);
-        setEnabled(false);
+        console.error(`Error checking feature flag ${flagKey}:`, error)
+        setEnabled(false)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
 
-    checkFlag();
-  }, [flagKey, session]);
+    checkFlag()
+  }, [flagKey, session])
 
-  return enabled;
+  return enabled
 }
 ```
 
@@ -362,37 +362,37 @@ export function useFeatureFlag(flagKey: string): boolean {
 
 ```typescript
 // src/middleware.ts
-import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
-import { featureFlagService } from "@/lib/feature-flags/service";
+import { NextRequest, NextResponse } from 'next/server'
+import { getToken } from 'next-auth/jwt'
+import { featureFlagService } from '@/lib/feature-flags/service'
 
 export async function middleware(request: NextRequest) {
   // Check if accessing beta API
-  if (request.nextUrl.pathname.startsWith("/api/beta/")) {
-    const token = await getToken({ req: request });
+  if (request.nextUrl.pathname.startsWith('/api/beta/')) {
+    const token = await getToken({ req: request })
 
     if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const hasAccess = await featureFlagService.isEnabled("BETA_API", {
+    const hasAccess = await featureFlagService.isEnabled('BETA_API', {
       user: {
         id: token.sub!,
         role: token.role as string,
         email: token.email!,
       },
       environment: process.env.NODE_ENV!,
-    });
+    })
 
     if (!hasAccess) {
       return NextResponse.json(
-        { error: "Feature not available" },
+        { error: 'Feature not available' },
         { status: 403 }
-      );
+      )
     }
   }
 
-  return NextResponse.next();
+  return NextResponse.next()
 }
 ```
 
@@ -491,18 +491,18 @@ function FeatureFlagCard({ flag }: { flag: any }) {
 // Use descriptive, hierarchical names
 const FLAGS = {
   // Feature areas
-  "dashboard.redesign": "NEW_DASHBOARD",
-  "api.v2": "API_V2",
-  "auth.social-login": "SOCIAL_LOGIN",
+  'dashboard.redesign': 'NEW_DASHBOARD',
+  'api.v2': 'API_V2',
+  'auth.social-login': 'SOCIAL_LOGIN',
 
   // Experiments
-  "experiment.checkout-flow": "CHECKOUT_EXPERIMENT",
-  "experiment.pricing-display": "PRICING_EXPERIMENT",
+  'experiment.checkout-flow': 'CHECKOUT_EXPERIMENT',
+  'experiment.pricing-display': 'PRICING_EXPERIMENT',
 
   // Kill switches
-  "killswitch.external-api": "DISABLE_EXTERNAL_API",
-  "killswitch.notifications": "DISABLE_NOTIFICATIONS",
-};
+  'killswitch.external-api': 'DISABLE_EXTERNAL_API',
+  'killswitch.notifications': 'DISABLE_NOTIFICATIONS',
+}
 ```
 
 ### Flag Lifecycle Management
@@ -523,12 +523,12 @@ export function trackFeatureFlagUsage(
   userId?: string
 ) {
   // Send to analytics/monitoring
-  analytics.track("feature_flag_evaluated", {
+  analytics.track('feature_flag_evaluated', {
     flag,
     enabled,
     userId,
     timestamp: new Date().toISOString(),
-  });
+  })
 }
 ```
 
@@ -543,11 +543,11 @@ export async function updateFeatureFlag(
   updates: any,
   user: { id: string; role: string }
 ) {
-  if (user.role !== "admin") {
-    throw new Error("Unauthorized: Admin access required");
+  if (user.role !== 'admin') {
+    throw new Error('Unauthorized: Admin access required')
   }
 
-  return featureFlagService.updateFlag(flagKey, updates, user.id);
+  return featureFlagService.updateFlag(flagKey, updates, user.id)
 }
 ```
 

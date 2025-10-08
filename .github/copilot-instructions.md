@@ -2,7 +2,8 @@
 
 ## Project Overview
 
-- **TypeScript/Next.js 14+ monorepo** for a personal website, with full-stack (SSR, API, DB) and DevOps automation.
+- **TypeScript/Next.js 15+ monorepo** for a personal website, with full-stack (SSR, API, DB) and DevOps automation.
+- **Latest Dependencies Strategy:** ALWAYS use the latest stable versions of all dependencies, tools, and frameworks. Stay current with the ecosystem to benefit from performance improvements, security patches, and new features.
 - **Test-Driven Development (TDD):** Write tests first, then implement features. Red → Green → Refactor cycle.
 - **Strict TypeScript, App Router, Prisma ORM, Tailwind CSS, Auth.js, PostgreSQL** (Cloud SQL), and containerized (Docker, Cloud Run).
 - **CI/CD:** GitHub Actions, with quality checks, tests, security scans, and multi-stage deploys.
@@ -157,6 +158,7 @@ Development → Staging → Production
 
 ## AI Agent Guidance
 
+- **ALWAYS USE LATEST VERSIONS:** When adding dependencies, installing tools, or updating configurations, ALWAYS use the latest stable versions available. Check npm registry, GitHub releases, or official docs for current versions.
 - **Follow project structure and naming conventions.**
 - **Reference `docs/website-roadmap.md` for architecture, tech stack, and rationale.**
 - **MANDATORY TDD: Write failing tests before any implementation.**
@@ -170,6 +172,7 @@ Development → Staging → Production
 - **Database migrations must be forward-compatible (additive changes first).**
 - **Include health check endpoints for all new services.**
 - **Consider deployment impact - staging first, then production approval.**
+- **Dependency Updates:** Regularly update dependencies to latest versions. Use `pnpm update` and check for major version updates manually. Always test after updates.
 
 ## Examples
 

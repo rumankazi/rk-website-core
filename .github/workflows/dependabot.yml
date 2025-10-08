@@ -1,0 +1,147 @@
+name: Dependabot Auto-Merge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+  checks: read
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+
+      - name: Auto-approve patch and minor updates
+        if: |
+          (steps.metadata.outputs.update-type == 'version-update:semver-patch' || 
+           steps.metadata.outputs.update-type == 'version-update:semver-minor') &&
+          contains(fromJson('["direct", "indirect"]'), steps.metadata.outputs.dependency-type)
+        run: |
+          gh pr review --approve "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on security updates
+        if: steps.metadata.outputs.alert-state == 'OPEN'
+        run: |
+          gh pr comment "$PR_URL" --body "🔒 **Security Update Detected**
+
+          This PR addresses a security vulnerability:
+          - **Package**: ${{ steps.metadata.outputs.dependency-names }}
+          - **Alert State**: ${{ steps.metadata.outputs.alert-state }}
+          - **CVSS Score**: ${{ steps.metadata.outputs.cvss }}
+
+          Please review and merge promptly after CI passes."
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge for approved dependencies
+        if: |
+          (steps.metadata.outputs.update-type == 'version-update:semver-patch' || 
+           steps.metadata.outputs.update-type == 'version-update:semver-minor') &&
+          contains(fromJson('[
+            "@types/node", "@types/react", "@types/react-dom",
+            "prettier", "eslint", "typescript",
+            "tailwindcss", "autoprefixer", "postcss",
+            "vitest", "@vitest/coverage-v8",
+            "@testing-library/react", "@testing-library/jest-dom", "@testing-library/user-event"
+            ]'), steps.metadata.outputs.dependency-names)
+        run: |
+          gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Label based on update type
+        run: |
+          case "${{ steps.metadata.outputs.update-type }}" in
+            "version-update:semver-major")
+              gh pr edit "$PR_URL" --add-label "major-update" --add-label "needs-review"
+              ;;
+            "version-update:semver-minor")
+              gh pr edit "$PR_URL" --add-label "minor-update"
+              ;;
+            "version-update:semver-patch")
+              gh pr edit "$PR_URL" --add-label "patch-update" --add-label "auto-mergeable"
+              ;;
+          esac
+
+          if [ "${{ steps.metadata.outputs.alert-state }}" = "OPEN" ]; then
+            gh pr edit "$PR_URL" --add-label "security" --add-label "priority-high"
+          fi
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Request review for major updates
+        if: steps.metadata.outputs.update-type == 'version-update:semver-major'
+        run: |
+          gh pr edit "$PR_URL" --add-reviewer "rumankazi"
+          gh pr comment "$PR_URL" --body "⚠️ **Major Version Update**
+
+          This is a major version update that may contain breaking changes:
+          - **Package**: ${{ steps.metadata.outputs.dependency-names }}
+          - **From**: ${{ steps.metadata.outputs.old-version }}
+          - **To**: ${{ steps.metadata.outputs.new-version }}
+
+          Please review the changelog and test thoroughly before merging.
+
+          **Action Required**: Manual review and approval needed."
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Wait for quality checks to complete before auto-merging
+  wait-for-checks:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    needs: dependabot
+    steps:
+      - name: Wait for status checks
+        uses: fountainhead/action-wait-for-check@v1.2.0
+        id: wait-for-checks
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: 'Quality Gate'
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          timeoutSeconds: 1800 # 30 minutes
+          intervalSeconds: 30
+
+      - name: Auto-merge if checks pass
+        if: |
+          steps.wait-for-checks.outputs.conclusion == 'success' &&
+          contains(github.event.pull_request.labels.*.name, 'auto-mergeable')
+        run: |
+          gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on failed checks
+        if: steps.wait-for-checks.outputs.conclusion == 'failure'
+        run: |
+          gh pr comment "$PR_URL" --body "❌ **Quality Checks Failed**
+
+          The automated quality checks failed for this dependency update.
+          Please review the failing checks and resolve any issues:
+
+          - Check the [Actions tab](${{ github.server_url }}/${{ github.repository }}/actions) for details
+          - Review any test failures or linting issues
+          - Consider if this update introduces breaking changes
+
+          Manual intervention may be required to resolve conflicts or update code."
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

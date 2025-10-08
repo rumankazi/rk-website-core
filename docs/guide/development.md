@@ -228,49 +228,49 @@ describe("Button", () => {
 
 ```typescript
 // src/app/api/users/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-import { db } from "@/lib/db";
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { db } from '@/lib/db'
 
 const CreateUserSchema = z.object({
   email: z.string().email(),
   name: z.string().min(1),
-});
+})
 
 export async function GET() {
   try {
-    const users = await db.user.findMany();
-    return NextResponse.json(users);
+    const users = await db.user.findMany()
+    return NextResponse.json(users)
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to fetch users" },
+      { error: 'Failed to fetch users' },
       { status: 500 }
-    );
+    )
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { email, name } = CreateUserSchema.parse(body);
+    const body = await request.json()
+    const { email, name } = CreateUserSchema.parse(body)
 
     const user = await db.user.create({
       data: { email, name },
-    });
+    })
 
-    return NextResponse.json(user, { status: 201 });
+    return NextResponse.json(user, { status: 201 })
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: "Invalid input", details: error.errors },
+        { error: 'Invalid input', details: error.errors },
         { status: 400 }
-      );
+      )
     }
 
     return NextResponse.json(
-      { error: "Failed to create user" },
+      { error: 'Failed to create user' },
       { status: 500 }
-    );
+    )
   }
 }
 ```
@@ -279,22 +279,22 @@ export async function POST(request: NextRequest) {
 
 ```typescript
 // tests/integration/api/users.test.ts
-import { describe, it, expect } from "vitest";
-import { testClient } from "@/tests/helpers/api-client";
+import { describe, it, expect } from 'vitest'
+import { testClient } from '@/tests/helpers/api-client'
 
-describe("/api/users", () => {
-  it("creates a new user", async () => {
+describe('/api/users', () => {
+  it('creates a new user', async () => {
     const userData = {
-      email: "test@example.com",
-      name: "Test User",
-    };
+      email: 'test@example.com',
+      name: 'Test User',
+    }
 
-    const response = await testClient.post("/api/users", userData);
+    const response = await testClient.post('/api/users', userData)
 
-    expect(response.status).toBe(201);
-    expect(response.body).toMatchObject(userData);
-  });
-});
+    expect(response.status).toBe(201)
+    expect(response.body).toMatchObject(userData)
+  })
+})
 ```
 
 ## Documentation Workflow

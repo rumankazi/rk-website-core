@@ -1,0 +1,192 @@
+version: 2
+updates:
+    # Main dependencies - grouped updates
+  - package-ecosystem: "npm"
+    dire  # Documentation dependencies
+  - package-ecosystem: "npm"
+    directory: "/docs"
+    schedule:
+      interval: "daily"
+      time: "00:00"
+      timezone: "UTC"/"
+    schedule:
+      interval: "daily"
+      time: "00:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "rumankazi"
+    assignees:
+      - "rumankazi"
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    groups:
+      # Group React ecosystem updates
+      react-ecosystem:
+        patterns:
+          - "react*"
+          - "@types/react*"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Group Next.js ecosystem updates
+      nextjs-ecosystem:
+        patterns:
+          - "next*"
+          - "@next/*"
+          - "eslint-config-next"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Group TypeScript ecosystem updates
+      typescript-ecosystem:
+        patterns:
+          - "typescript"
+          - "@typescript-eslint/*"
+          - "@types/*"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Group testing ecosystem updates
+      testing-ecosystem:
+        patterns:
+          - "vitest*"
+          - "@vitest/*"
+          - "@playwright/*"
+          - "playwright"
+          - "@testing-library/*"
+          - "jsdom"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Group Prisma ecosystem updates
+      prisma-ecosystem:
+        patterns:
+          - "prisma"
+          - "@prisma/*"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Group linting and formatting tools
+      code-quality-tools:
+        patterns:
+          - "eslint*"
+          - "@eslint/*"
+          - "prettier*"
+          - "husky"
+          - "lint-staged"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Group Tailwind CSS ecosystem
+      tailwind-ecosystem:
+        patterns:
+          - "tailwindcss*"
+          - "@tailwindcss/*"
+          - "autoprefixer"
+          - "postcss"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Documentation dependencies (VitePress)
+  - package-ecosystem: "npm"
+    directory: "/docs"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "rumankazi"
+    assignees:
+      - "rumankazi"
+    commit-message:
+      prefix: "docs"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "documentation"
+      - "automated"
+    groups:
+      # Group VitePress ecosystem updates
+      vitepress-ecosystem:
+        patterns:
+          - "vitepress*"
+          - "vue*"
+          - "vite*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # GitHub Actions workflow dependencies
+    # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "00:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "rumankazi"
+    assignees:
+      - "rumankazi"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "automated"
+    groups:
+      # Group common GitHub Actions
+      common-actions:
+        patterns:
+          - "actions/*"
+          - "github/*"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Group Node.js setup actions
+      nodejs-actions:
+        patterns:
+          - "actions/setup-node"
+          - "pnpm/action-setup"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Group security and quality actions
+      security-actions:
+        patterns:
+          - "github/codeql-action/*"
+          - "snyk/actions/*"
+          - "github/super-linter/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+    # Docker images
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "00:00"
+      timezone: "UTC"

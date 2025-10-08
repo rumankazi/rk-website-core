@@ -2,9 +2,9 @@
 layout: home
 
 hero:
-  name: "RK Website Core"
-  text: "Modern TypeScript/Next.js Development"
-  tagline: "Complete full-stack development documentation with DevOps automation"
+  name: 'RK Website Core'
+  text: 'Modern TypeScript/Next.js Development'
+  tagline: 'Complete full-stack development documentation with DevOps automation'
   image:
     src: /hero-image.png
     alt: RK Website Core

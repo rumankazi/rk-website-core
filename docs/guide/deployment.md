@@ -309,37 +309,37 @@ CMD ["node", "server.js"]
 ```typescript
 // src/app/api/health/route.ts
 export async function GET() {
-  const startTime = Date.now();
+  const startTime = Date.now()
 
   try {
     // Database connectivity check
-    await db.$queryRaw`SELECT 1`;
+    await db.$queryRaw`SELECT 1`
 
     // External service checks (if applicable)
     const externalChecks = await Promise.allSettled([
       // Add external service health checks here
-    ]);
+    ])
 
-    const responseTime = Date.now() - startTime;
+    const responseTime = Date.now() - startTime
 
     return Response.json({
-      status: "healthy",
+      status: 'healthy',
       timestamp: new Date().toISOString(),
       responseTime: `${responseTime}ms`,
       checks: {
-        database: "connected",
-        external: externalChecks.length > 0 ? "checked" : "none",
+        database: 'connected',
+        external: externalChecks.length > 0 ? 'checked' : 'none',
       },
-    });
+    })
   } catch (error) {
     return Response.json(
       {
-        status: "unhealthy",
+        status: 'unhealthy',
         timestamp: new Date().toISOString(),
-        error: error instanceof Error ? error.message : "Unknown error",
+        error: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 503 }
-    );
+    )
   }
 }
 ```

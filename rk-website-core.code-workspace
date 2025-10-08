@@ -1,18 +1,18 @@
 {
   "folders": [
     {
-      "path": "."
-    }
+      "path": ".",
+    },
   ],
   "settings": {
     // Workspace-specific overrides
     "typescript.preferences.includePackageJsonAutoImports": "auto",
     "typescript.suggest.includeCompletionsForImportStatements": true,
     "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
-    
+
     // Next.js specific settings
     "next.telemetry.enabled": false,
-    
+
     // File watching
     "files.watcherExclude": {
       "**/.git/objects/**": true,
@@ -20,8 +20,8 @@
       "**/node_modules/**": true,
       "**/.next/**": true,
       "**/dist/**": true,
-      "**/coverage/**": true
-    }
+      "**/coverage/**": true,
+    },
   },
   "extensions": {
     "recommendations": [
@@ -38,7 +38,7 @@
       "usernamehw.errorlens",
       "christian-kohler.path-intellisense",
       "formulahendry.auto-rename-tag",
-      "redhat.vscode-yaml"
-    ]
-  }
+      "redhat.vscode-yaml",
+    ],
+  },
 }

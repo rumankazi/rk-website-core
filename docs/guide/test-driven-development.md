@@ -22,16 +22,16 @@ Write the **smallest possible test** that describes the desired behavior:
 
 ```typescript
 // tests/unit/utils/formatCurrency.test.ts
-import { describe, it, expect } from "vitest";
-import { formatCurrency } from "@/lib/utils/formatCurrency";
+import { describe, it, expect } from 'vitest'
+import { formatCurrency } from '@/lib/utils/formatCurrency'
 
-describe("formatCurrency", () => {
-  it("should format a number as USD currency", () => {
+describe('formatCurrency', () => {
+  it('should format a number as USD currency', () => {
     // This test will fail because formatCurrency doesn't exist yet
-    const result = formatCurrency(1234.56);
-    expect(result).toBe("$1,234.56");
-  });
-});
+    const result = formatCurrency(1234.56)
+    expect(result).toBe('$1,234.56')
+  })
+})
 ```
 
 **Key Principles for RED Phase:**
@@ -48,10 +48,10 @@ Write the **minimal code** to make the test pass:
 ```typescript
 // src/lib/utils/formatCurrency.ts
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(amount);
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(amount)
 }
 ```
 
@@ -69,20 +69,20 @@ Improve the code while keeping tests green:
 ```typescript
 // src/lib/utils/formatCurrency.ts (refactored)
 export interface CurrencyOptions {
-  currency?: string;
-  locale?: string;
+  currency?: string
+  locale?: string
 }
 
 export function formatCurrency(
   amount: number,
   options: CurrencyOptions = {}
 ): string {
-  const { currency = "USD", locale = "en-US" } = options;
+  const { currency = 'USD', locale = 'en-US' } = options
 
   return new Intl.NumberFormat(locale, {
-    style: "currency",
+    style: 'currency',
     currency,
-  }).format(amount);
+  }).format(amount)
 }
 ```
 
@@ -101,38 +101,38 @@ export function formatCurrency(
 
 ```typescript
 // tests/unit/lib/validators.test.ts
-import { describe, it, expect } from "vitest";
-import { validateEmail, validatePassword } from "@/lib/validators";
+import { describe, it, expect } from 'vitest'
+import { validateEmail, validatePassword } from '@/lib/validators'
 
-describe("validateEmail", () => {
-  it("should return true for valid email addresses", () => {
-    expect(validateEmail("user@example.com")).toBe(true);
-    expect(validateEmail("test.email+tag@example.co.uk")).toBe(true);
-  });
+describe('validateEmail', () => {
+  it('should return true for valid email addresses', () => {
+    expect(validateEmail('user@example.com')).toBe(true)
+    expect(validateEmail('test.email+tag@example.co.uk')).toBe(true)
+  })
 
-  it("should return false for invalid email addresses", () => {
-    expect(validateEmail("invalid-email")).toBe(false);
-    expect(validateEmail("")).toBe(false);
-    expect(validateEmail("user@")).toBe(false);
-  });
+  it('should return false for invalid email addresses', () => {
+    expect(validateEmail('invalid-email')).toBe(false)
+    expect(validateEmail('')).toBe(false)
+    expect(validateEmail('user@')).toBe(false)
+  })
 
-  it("should handle edge cases", () => {
-    expect(validateEmail(null as any)).toBe(false);
-    expect(validateEmail(undefined as any)).toBe(false);
-  });
-});
+  it('should handle edge cases', () => {
+    expect(validateEmail(null as any)).toBe(false)
+    expect(validateEmail(undefined as any)).toBe(false)
+  })
+})
 
-describe("validatePassword", () => {
-  it("should require minimum 8 characters", () => {
-    expect(validatePassword("short")).toBe(false);
-    expect(validatePassword("longenough123")).toBe(true);
-  });
+describe('validatePassword', () => {
+  it('should require minimum 8 characters', () => {
+    expect(validatePassword('short')).toBe(false)
+    expect(validatePassword('longenough123')).toBe(true)
+  })
 
-  it("should require at least one number", () => {
-    expect(validatePassword("noNumbersHere")).toBe(false);
-    expect(validatePassword("hasNumber1")).toBe(true);
-  });
-});
+  it('should require at least one number', () => {
+    expect(validatePassword('noNumbersHere')).toBe(false)
+    expect(validatePassword('hasNumber1')).toBe(true)
+  })
+})
 ```
 
 ### Component Tests - React Components
@@ -178,86 +178,86 @@ describe("Button", () => {
 
 ```typescript
 // tests/integration/api/users.test.ts
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { testClient } from "@/tests/helpers/api-client";
-import { cleanupDatabase, seedTestData } from "@/tests/helpers/database";
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { testClient } from '@/tests/helpers/api-client'
+import { cleanupDatabase, seedTestData } from '@/tests/helpers/database'
 
-describe("/api/users", () => {
+describe('/api/users', () => {
   beforeEach(async () => {
-    await cleanupDatabase();
-    await seedTestData();
-  });
+    await cleanupDatabase()
+    await seedTestData()
+  })
 
   afterEach(async () => {
-    await cleanupDatabase();
-  });
+    await cleanupDatabase()
+  })
 
-  describe("POST /api/users", () => {
-    it("should create a new user with valid data", async () => {
+  describe('POST /api/users', () => {
+    it('should create a new user with valid data', async () => {
       const userData = {
-        email: "test@example.com",
-        name: "Test User",
-      };
+        email: 'test@example.com',
+        name: 'Test User',
+      }
 
-      const response = await testClient.post("/api/users", userData);
+      const response = await testClient.post('/api/users', userData)
 
-      expect(response.status).toBe(201);
+      expect(response.status).toBe(201)
       expect(response.body).toMatchObject({
         email: userData.email,
         name: userData.name,
         id: expect.any(String),
-      });
-    });
+      })
+    })
 
-    it("should return 400 for invalid email", async () => {
+    it('should return 400 for invalid email', async () => {
       const userData = {
-        email: "invalid-email",
-        name: "Test User",
-      };
+        email: 'invalid-email',
+        name: 'Test User',
+      }
 
-      const response = await testClient.post("/api/users", userData);
+      const response = await testClient.post('/api/users', userData)
 
-      expect(response.status).toBe(400);
-      expect(response.body.error).toContain("Invalid email");
-    });
+      expect(response.status).toBe(400)
+      expect(response.body.error).toContain('Invalid email')
+    })
 
-    it("should return 409 for duplicate email", async () => {
+    it('should return 409 for duplicate email', async () => {
       const userData = {
-        email: "existing@example.com",
-        name: "Test User",
-      };
+        email: 'existing@example.com',
+        name: 'Test User',
+      }
 
       // First request should succeed
-      await testClient.post("/api/users", userData);
+      await testClient.post('/api/users', userData)
 
       // Second request should fail
-      const response = await testClient.post("/api/users", userData);
-      expect(response.status).toBe(409);
-    });
-  });
+      const response = await testClient.post('/api/users', userData)
+      expect(response.status).toBe(409)
+    })
+  })
 
-  describe("GET /api/users", () => {
-    it("should return list of users", async () => {
-      const response = await testClient.get("/api/users");
+  describe('GET /api/users', () => {
+    it('should return list of users', async () => {
+      const response = await testClient.get('/api/users')
 
-      expect(response.status).toBe(200);
-      expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.length).toBeGreaterThan(0);
-    });
+      expect(response.status).toBe(200)
+      expect(Array.isArray(response.body)).toBe(true)
+      expect(response.body.length).toBeGreaterThan(0)
+    })
 
-    it("should support pagination", async () => {
-      const response = await testClient.get("/api/users?page=1&limit=5");
+    it('should support pagination', async () => {
+      const response = await testClient.get('/api/users?page=1&limit=5')
 
-      expect(response.status).toBe(200);
-      expect(response.body.users).toHaveLength(5);
+      expect(response.status).toBe(200)
+      expect(response.body.users).toHaveLength(5)
       expect(response.body.pagination).toMatchObject({
         page: 1,
         limit: 5,
         total: expect.any(Number),
-      });
-    });
-  });
-});
+      })
+    })
+  })
+})
 ```
 
 ### E2E Tests - User Journeys
@@ -266,55 +266,55 @@ describe("/api/users", () => {
 
 ```typescript
 // tests/e2e/auth.spec.ts
-import { test, expect } from "@playwright/test";
+import { test, expect } from '@playwright/test'
 
-test.describe("User Authentication", () => {
-  test("should allow user to sign up and log in", async ({ page }) => {
+test.describe('User Authentication', () => {
+  test('should allow user to sign up and log in', async ({ page }) => {
     // Navigate to sign up page
-    await page.goto("/auth/signup");
+    await page.goto('/auth/signup')
 
     // Fill out signup form
-    await page.fill("[data-testid=email-input]", "test@example.com");
-    await page.fill("[data-testid=password-input]", "securePassword123");
-    await page.fill("[data-testid=name-input]", "Test User");
+    await page.fill('[data-testid=email-input]', 'test@example.com')
+    await page.fill('[data-testid=password-input]', 'securePassword123')
+    await page.fill('[data-testid=name-input]', 'Test User')
 
     // Submit form
-    await page.click("[data-testid=signup-button]");
+    await page.click('[data-testid=signup-button]')
 
     // Should redirect to dashboard
-    await expect(page).toHaveURL("/dashboard");
-    await expect(page.locator("[data-testid=welcome-message]")).toContainText(
-      "Welcome, Test User"
-    );
-  });
+    await expect(page).toHaveURL('/dashboard')
+    await expect(page.locator('[data-testid=welcome-message]')).toContainText(
+      'Welcome, Test User'
+    )
+  })
 
-  test("should show error for invalid credentials", async ({ page }) => {
-    await page.goto("/auth/login");
+  test('should show error for invalid credentials', async ({ page }) => {
+    await page.goto('/auth/login')
 
-    await page.fill("[data-testid=email-input]", "wrong@example.com");
-    await page.fill("[data-testid=password-input]", "wrongpassword");
-    await page.click("[data-testid=login-button]");
+    await page.fill('[data-testid=email-input]', 'wrong@example.com')
+    await page.fill('[data-testid=password-input]', 'wrongpassword')
+    await page.click('[data-testid=login-button]')
 
-    await expect(page.locator("[data-testid=error-message]")).toContainText(
-      "Invalid credentials"
-    );
-  });
+    await expect(page.locator('[data-testid=error-message]')).toContainText(
+      'Invalid credentials'
+    )
+  })
 
-  test("should allow user to log out", async ({ page }) => {
+  test('should allow user to log out', async ({ page }) => {
     // Login first (could use a helper function)
-    await page.goto("/auth/login");
-    await page.fill("[data-testid=email-input]", "existing@example.com");
-    await page.fill("[data-testid=password-input]", "password123");
-    await page.click("[data-testid=login-button]");
+    await page.goto('/auth/login')
+    await page.fill('[data-testid=email-input]', 'existing@example.com')
+    await page.fill('[data-testid=password-input]', 'password123')
+    await page.click('[data-testid=login-button]')
 
     // Logout
-    await page.click("[data-testid=user-menu]");
-    await page.click("[data-testid=logout-button]");
+    await page.click('[data-testid=user-menu]')
+    await page.click('[data-testid=logout-button]')
 
     // Should redirect to home page
-    await expect(page).toHaveURL("/");
-  });
-});
+    await expect(page).toHaveURL('/')
+  })
+})
 ```
 
 ## TDD Best Practices
@@ -325,14 +325,14 @@ Use descriptive test names that explain the behavior:
 
 ```typescript
 // ❌ Poor test names
-it("should work");
-it("test user creation");
-it("validates input");
+it('should work')
+it('test user creation')
+it('validates input')
 
 // ✅ Good test names
-it("should format positive numbers with dollar sign and commas");
-it("should create user with valid email and return user object");
-it("should return validation error when email is missing @ symbol");
+it('should format positive numbers with dollar sign and commas')
+it('should create user with valid email and return user object')
+it('should return validation error when email is missing @ symbol')
 ```
 
 ### Test Organization
@@ -340,25 +340,25 @@ it("should return validation error when email is missing @ symbol");
 **Group related tests and use consistent structure:**
 
 ```typescript
-describe("UserService", () => {
-  describe("createUser", () => {
-    describe("when given valid input", () => {
-      it("should create user in database");
-      it("should return user object with id");
-      it("should hash password before storing");
-    });
+describe('UserService', () => {
+  describe('createUser', () => {
+    describe('when given valid input', () => {
+      it('should create user in database')
+      it('should return user object with id')
+      it('should hash password before storing')
+    })
 
-    describe("when given invalid input", () => {
-      it("should throw error for missing email");
-      it("should throw error for weak password");
-      it("should throw error for duplicate email");
-    });
-  });
+    describe('when given invalid input', () => {
+      it('should throw error for missing email')
+      it('should throw error for weak password')
+      it('should throw error for duplicate email')
+    })
+  })
 
-  describe("updateUser", () => {
+  describe('updateUser', () => {
     // Similar structure...
-  });
-});
+  })
+})
 ```
 
 ### Test Data Management
@@ -367,23 +367,23 @@ describe("UserService", () => {
 
 ```typescript
 // tests/helpers/factories.ts
-import { faker } from "@faker-js/faker";
+import { faker } from '@faker-js/faker'
 
 export const userFactory = {
   build: (overrides = {}) => ({
     email: faker.internet.email(),
     name: faker.person.fullName(),
-    password: "SecurePassword123!",
+    password: 'SecurePassword123!',
     ...overrides,
   }),
 
   buildMany: (count: number, overrides = {}) =>
     Array.from({ length: count }, () => userFactory.build(overrides)),
-};
+}
 
 // Usage in tests
-const testUser = userFactory.build({ email: "specific@test.com" });
-const testUsers = userFactory.buildMany(5);
+const testUser = userFactory.build({ email: 'specific@test.com' })
+const testUsers = userFactory.buildMany(5)
 ```
 
 ### Mocking External Dependencies
@@ -392,40 +392,40 @@ const testUsers = userFactory.buildMany(5);
 
 ```typescript
 // tests/unit/services/EmailService.test.ts
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { EmailService } from "@/lib/services/EmailService";
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { EmailService } from '@/lib/services/EmailService'
 
 // Mock the external email provider
-vi.mock("@/lib/providers/sendgrid", () => ({
+vi.mock('@/lib/providers/sendgrid', () => ({
   sendEmail: vi.fn(),
-}));
+}))
 
-describe("EmailService", () => {
-  let emailService: EmailService;
+describe('EmailService', () => {
+  let emailService: EmailService
 
   beforeEach(() => {
-    vi.clearAllMocks();
-    emailService = new EmailService();
-  });
+    vi.clearAllMocks()
+    emailService = new EmailService()
+  })
 
-  it("should send welcome email to new users", async () => {
-    const mockSendEmail = vi.mocked(sendEmail);
-    mockSendEmail.mockResolvedValue({ success: true });
+  it('should send welcome email to new users', async () => {
+    const mockSendEmail = vi.mocked(sendEmail)
+    mockSendEmail.mockResolvedValue({ success: true })
 
     const result = await emailService.sendWelcomeEmail({
-      email: "user@example.com",
-      name: "Test User",
-    });
+      email: 'user@example.com',
+      name: 'Test User',
+    })
 
     expect(mockSendEmail).toHaveBeenCalledWith({
-      to: "user@example.com",
-      subject: "Welcome to our platform!",
-      template: "welcome",
-      data: { name: "Test User" },
-    });
-    expect(result.success).toBe(true);
-  });
-});
+      to: 'user@example.com',
+      subject: 'Welcome to our platform!',
+      template: 'welcome',
+      data: { name: 'Test User' },
+    })
+    expect(result.success).toBe(true)
+  })
+})
 ```
 
 ## Testing Configuration
@@ -434,24 +434,24 @@ describe("EmailService", () => {
 
 ```typescript
 // vitest.config.ts
-import { defineConfig } from "vitest/config";
-import path from "path";
+import { defineConfig } from 'vitest/config'
+import path from 'path'
 
 export default defineConfig({
   test: {
     globals: true,
-    environment: "jsdom",
-    setupFiles: ["./tests/setup.ts"],
+    environment: 'jsdom',
+    setupFiles: ['./tests/setup.ts'],
     coverage: {
-      provider: "v8",
-      reporter: ["text", "json", "html"],
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
       exclude: [
-        "node_modules/",
-        "tests/",
-        "dist/",
-        "**/*.d.ts",
-        "**/*.config.*",
-        "coverage/",
+        'node_modules/',
+        'tests/',
+        'dist/',
+        '**/*.d.ts',
+        '**/*.config.*',
+        'coverage/',
       ],
       thresholds: {
         global: {
@@ -465,50 +465,50 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '@': path.resolve(__dirname, './src'),
     },
   },
-});
+})
 ```
 
 ### Playwright Configuration
 
 ```typescript
 // playwright.config.ts
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
-  testDir: "./tests/e2e",
+  testDir: './tests/e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: "html",
+  reporter: 'html',
   use: {
-    baseURL: "http://localhost:3000",
-    trace: "on-first-retry",
-    screenshot: "only-on-failure",
+    baseURL: 'http://localhost:3000',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
   },
   projects: [
     {
-      name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
     },
     {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
     },
     {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
     },
   ],
   webServer: {
-    command: "pnpm dev",
-    url: "http://localhost:3000",
+    command: 'pnpm dev',
+    url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
   },
-});
+})
 ```
 
 ## TDD Workflow Integration
@@ -580,7 +580,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - run: pnpm install
       - run: pnpm test:coverage
@@ -595,51 +595,51 @@ jobs:
 ### Testing API Error Handling
 
 ```typescript
-describe("API Error Handling", () => {
-  it("should handle database connection errors", async () => {
+describe('API Error Handling', () => {
+  it('should handle database connection errors', async () => {
     // Mock database to throw error
-    vi.mocked(db.user.create).mockRejectedValue(new Error("Connection failed"));
+    vi.mocked(db.user.create).mockRejectedValue(new Error('Connection failed'))
 
-    const response = await testClient.post("/api/users", validUserData);
+    const response = await testClient.post('/api/users', validUserData)
 
-    expect(response.status).toBe(500);
-    expect(response.body.error).toBe("Internal server error");
-  });
-});
+    expect(response.status).toBe(500)
+    expect(response.body.error).toBe('Internal server error')
+  })
+})
 ```
 
 ### Testing Async Operations
 
 ```typescript
-describe("Async Operations", () => {
-  it("should handle promise rejections", async () => {
-    const asyncFunction = vi.fn().mockRejectedValue(new Error("Async error"));
+describe('Async Operations', () => {
+  it('should handle promise rejections', async () => {
+    const asyncFunction = vi.fn().mockRejectedValue(new Error('Async error'))
 
     await expect(myService.processAsync(asyncFunction)).rejects.toThrow(
-      "Async error"
-    );
-  });
-});
+      'Async error'
+    )
+  })
+})
 ```
 
 ### Testing React Hooks
 
 ```typescript
 // Custom hook testing
-import { renderHook, act } from "@testing-library/react";
-import { useCounter } from "@/hooks/useCounter";
+import { renderHook, act } from '@testing-library/react'
+import { useCounter } from '@/hooks/useCounter'
 
-describe("useCounter", () => {
-  it("should increment counter", () => {
-    const { result } = renderHook(() => useCounter(0));
+describe('useCounter', () => {
+  it('should increment counter', () => {
+    const { result } = renderHook(() => useCounter(0))
 
     act(() => {
-      result.current.increment();
-    });
+      result.current.increment()
+    })
 
-    expect(result.current.count).toBe(1);
-  });
-});
+    expect(result.current.count).toBe(1)
+  })
+})
 ```
 
 ## Measuring TDD Success

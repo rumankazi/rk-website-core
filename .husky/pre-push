@@ -1,0 +1,11 @@
+echo "🚀 Running pre-push checks..."
+
+# Build the application to ensure it builds correctly
+echo "🔨 Building application..."
+pnpm build
+
+# Run security audit
+echo "🔒 Running security audit..."
+pnpm security:check || echo "⚠️ Security audit found issues"
+
+echo "✅ Pre-push checks completed!"
