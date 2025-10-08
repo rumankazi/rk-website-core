@@ -1,0 +1,134 @@
+{
+	"name": "Next.js TypeScript Fullstack",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": { 
+			"VARIANT": "20-bullseye"
+		}
+	},
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Essential extensions for TypeScript/Next.js development
+			"extensions": [
+				// Core Development
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"ms-vscode.vscode-typescript-next",
+				
+				// Framework Specific
+				"bradlc.vscode-tailwindcss",
+				"Prisma.prisma",
+				"ms-playwright.playwright",
+				
+				// Git & GitHub
+				"eamodio.gitlens",
+				"github.vscode-github-actions",
+				"github.copilot",
+				
+				// DevOps & Docker
+				"ms-azuretools.vscode-docker",
+				"hashicorp.terraform",
+				
+				// Productivity
+				"usernamehw.errorlens",
+				"christian-kohler.path-intellisense",
+				"formulahendry.auto-rename-tag",
+				"ms-vscode.vscode-json"
+			],
+			"settings": {
+				// Editor basics
+				"editor.formatOnSave": true,
+				"editor.codeActionsOnSave": {
+					"source.fixAll.eslint": "explicit",
+					"source.organizeImports": "explicit"
+				},
+				
+				// TypeScript settings
+				"typescript.preferences.quoteStyle": "single",
+				"typescript.suggest.autoImports": true,
+				"typescript.updateImportsOnFileMove.enabled": "always",
+				
+				// File associations
+				"files.associations": {
+					"*.css": "tailwindcss"
+				},
+				
+				// Tailwind CSS
+				"tailwindCSS.includeLanguages": {
+					"typescript": "javascript",
+					"typescriptreact": "javascript"
+				},
+				
+				// ESLint settings
+				"eslint.workingDirectories": ["./"],
+				"eslint.validate": [
+					"javascript",
+					"javascriptreact",
+					"typescript",
+					"typescriptreact"
+				],
+				
+				// Files to exclude
+				"files.exclude": {
+					"**/node_modules": true,
+					"**/.next": true,
+					"**/dist": true,
+					"**/.git": true
+				},
+				
+				// Search settings
+				"search.exclude": {
+					"**/node_modules": true,
+					"**/.next": true,
+					"**/dist": true,
+					"**/coverage": true
+				},
+				
+				// Terminal
+				"terminal.integrated.defaultProfile.linux": "bash",
+				
+				// Git
+				"git.autofetch": true,
+				"git.confirmSync": false,
+				
+				// Emmet
+				"emmet.includeLanguages": {
+					"javascript": "javascriptreact",
+					"typescript": "typescriptreact"
+				}
+			}
+		}
+	},
+
+	// Forward common development ports
+	"forwardPorts": [3000, 5432, 9090, 3001],
+	"portsAttributes": {
+		"3000": {
+			"label": "Next.js App",
+			"onAutoForward": "notify"
+		},
+		"5432": {
+			"label": "PostgreSQL"
+		},
+		"9090": {
+			"label": "Prometheus"
+		},
+		"3001": {
+			"label": "Grafana"
+		}
+	},
+
+	// Post-create commands to set up development environment
+	"postCreateCommand": "npm install -g pnpm && echo 'DevContainer ready! Run: pnpm install && pnpm dev'",
+
+	// Features to add to the container
+	"features": {
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
+	},
+
+	"remoteUser": "node"
+}
