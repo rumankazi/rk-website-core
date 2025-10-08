@@ -79,7 +79,7 @@ jobs:
         run: pnpm exec prettier --check .
 
       - name: Upload ESLint results
-        uses: github/super-linter/slim@v5
+        uses: github/super-linter/slim@v7
         if: always()
         env:
           DEFAULT_BRANCH: main
