@@ -1,14 +1,8 @@
 version: 2
 updates:
-    # Main dependencies - grouped updates
+  # Main dependencies - grouped updates
   - package-ecosystem: "npm"
-    dire  # Documentation dependencies
-  - package-ecosystem: "npm"
-    directory: "/docs"
-    schedule:
-      interval: "daily"
-      time: "00:00"
-      timezone: "UTC"/"
+    directory: "/"
     schedule:
       interval: "daily"
       time: "00:00"
@@ -107,9 +101,8 @@ updates:
   - package-ecosystem: "npm"
     directory: "/docs"
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "10:00"
+      interval: "daily"
+      time: "00:00"
       timezone: "UTC"
     open-pull-requests-limit: 5
     reviewers:
@@ -135,7 +128,6 @@ updates:
           - "patch"
 
   # GitHub Actions workflow dependencies
-    # GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -183,10 +175,22 @@ updates:
           - "minor"
           - "patch"
 
-    # Docker images
+  # Docker images
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
       interval: "daily"
       time: "00:00"
       timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "rumankazi"
+    assignees:
+      - "rumankazi"
+    commit-message:
+      prefix: "docker"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker"
+      - "automated"
