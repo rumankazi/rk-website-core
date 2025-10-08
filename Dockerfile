@@ -1,5 +1,5 @@
 # Multi-stage Dockerfile for production deployment
-FROM node:20-alpine AS deps
+FROM node:24-alpine AS deps
 WORKDIR /app
 
 # Install pnpm
@@ -17,7 +17,7 @@ RUN pnpm prisma generate
 
 # ===============================================
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 WORKDIR /app
 
 # Install pnpm
@@ -35,7 +35,7 @@ RUN pnpm build
 
 # ===============================================
 # Production stage
-FROM node:20-alpine AS runner
+FROM node:24-alpine AS runner
 WORKDIR /app
 
 # Create non-root user
