@@ -160,13 +160,17 @@ If commands are still slow:
 
 ### Vitest Configuration
 
+### Vitest Configuration
+
 ```typescript
+import { cpus } from 'node:os'
+
 export default defineConfig({
+  cacheDir: 'node_modules/.cache/vitest',
   test: {
-    cache: { dir: 'node_modules/.cache/vitest' },
     poolOptions: {
       threads: {
-        maxThreads: Math.max(1, os.cpus().length - 1),
+        maxThreads: Math.max(1, cpus().length - 1),
       },
     },
   },
