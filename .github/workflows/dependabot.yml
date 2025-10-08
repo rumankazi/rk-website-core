@@ -2,7 +2,14 @@ name: Dependabot Auto-Merge
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    - name: Enable auto-merge for grouped updates
+      if: |
+        (steps.metadata.outputs.update-type == 'version-update:semver-patch' || 
+         steps.metadata.outputs.update-type == 'version-update:semver-minor') &&
+        (contains(github.event.pull_request.title, 'all-minor-patch') ||
+         contains(github.event.pull_request.title, 'all-docs-updates') ||
+         contains(github.event.pull_request.title, 'all-github-actions') ||
+         contains(github.event.pull_request.title, 'all-docker-updates'))[opened, synchronize, reopened, ready_for_review]
 
 permissions:
   contents: write

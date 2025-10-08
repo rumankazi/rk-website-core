@@ -1,196 +1,141 @@
 version: 2
 updates:
   # Main dependencies - grouped updates
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "daily"
-      time: "00:00"
-      timezone: "UTC"
-    open-pull-requests-limit: 10
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'UTC'
+    open-pull-requests-limit: 3
     reviewers:
-      - "rumankazi"
+      - 'rumankazi'
     assignees:
-      - "rumankazi"
+      - 'rumankazi'
     commit-message:
-      prefix: "deps"
-      prefix-development: "deps-dev"
-      include: "scope"
+      prefix: 'deps'
+      prefix-development: 'deps-dev'
+      include: 'scope'
     labels:
-      - "dependencies"
-      - "automated"
+      - 'dependencies'
+      - 'automated'
     allow:
-      - dependency-type: "direct"
-      - dependency-type: "indirect"
+      - dependency-type: 'direct'
+      - dependency-type: 'indirect'
     groups:
-      # Group React ecosystem updates
-      react-ecosystem:
+      # Group ALL non-major updates together (significantly reduces PRs)
+      all-minor-patch:
         patterns:
-          - "react*"
-          - "@types/react*"
+          - '*'
         update-types:
-          - "minor"
-          - "patch"
-      
-      # Group Next.js ecosystem updates
-      nextjs-ecosystem:
+          - 'minor'
+          - 'patch'
+        exclude-patterns:
+          # Exclude packages that need individual attention
+          - 'next'
+          - 'react'
+          - 'typescript'
+          - 'prisma'
+          - '@prisma/client'
+
+      # Critical packages that need separate PRs for major versions
+      critical-majors:
         patterns:
-          - "next*"
-          - "@next/*"
-          - "eslint-config-next"
+          - 'next'
+          - 'react*'
+          - 'typescript'
+          - 'prisma'
+          - '@prisma/*'
         update-types:
-          - "minor"
-          - "patch"
-      
-      # Group TypeScript ecosystem updates
-      typescript-ecosystem:
-        patterns:
-          - "typescript"
-          - "@typescript-eslint/*"
-          - "@types/*"
-        update-types:
-          - "minor"
-          - "patch"
-      
-      # Group testing ecosystem updates
-      testing-ecosystem:
-        patterns:
-          - "vitest*"
-          - "@vitest/*"
-          - "@playwright/*"
-          - "playwright"
-          - "@testing-library/*"
-          - "jsdom"
-        update-types:
-          - "minor"
-          - "patch"
-      
-      # Group Prisma ecosystem updates
-      prisma-ecosystem:
-        patterns:
-          - "prisma"
-          - "@prisma/*"
-        update-types:
-          - "minor"
-          - "patch"
-      
-      # Group linting and formatting tools
-      code-quality-tools:
-        patterns:
-          - "eslint*"
-          - "@eslint/*"
-          - "prettier*"
-          - "husky"
-          - "lint-staged"
-        update-types:
-          - "minor"
-          - "patch"
-      
-      # Group Tailwind CSS ecosystem
-      tailwind-ecosystem:
-        patterns:
-          - "tailwindcss*"
-          - "@tailwindcss/*"
-          - "autoprefixer"
-          - "postcss"
-        update-types:
-          - "minor"
-          - "patch"
+          - 'major'
 
   # Documentation dependencies (VitePress)
-  - package-ecosystem: "npm"
-    directory: "/docs"
+  - package-ecosystem: 'npm'
+    directory: '/docs'
     schedule:
-      interval: "daily"
-      time: "00:00"
-      timezone: "UTC"
-    open-pull-requests-limit: 5
+      interval: 'weekly'
+      day: 'tuesday'
+      time: '09:00'
+      timezone: 'UTC'
+    open-pull-requests-limit: 2
     reviewers:
-      - "rumankazi"
+      - 'rumankazi'
     assignees:
-      - "rumankazi"
+      - 'rumankazi'
     commit-message:
-      prefix: "docs"
-      include: "scope"
+      prefix: 'docs'
+      include: 'scope'
     labels:
-      - "dependencies"
-      - "documentation"
-      - "automated"
+      - 'dependencies'
+      - 'documentation'
+      - 'automated'
     groups:
-      # Group VitePress ecosystem updates
-      vitepress-ecosystem:
+      # Group ALL documentation updates together
+      all-docs-updates:
         patterns:
-          - "vitepress*"
-          - "vue*"
-          - "vite*"
+          - '*'
         update-types:
-          - "minor"
-          - "patch"
+          - 'minor'
+          - 'patch'
+          - 'major'
 
   # GitHub Actions workflow dependencies
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "daily"
-      time: "00:00"
-      timezone: "UTC"
-    open-pull-requests-limit: 5
+      interval: 'weekly'
+      day: 'wednesday'
+      time: '09:00'
+      timezone: 'UTC'
+    open-pull-requests-limit: 2
     reviewers:
-      - "rumankazi"
+      - 'rumankazi'
     assignees:
-      - "rumankazi"
+      - 'rumankazi'
     commit-message:
-      prefix: "ci"
-      include: "scope"
+      prefix: 'ci'
+      include: 'scope'
     labels:
-      - "dependencies"
-      - "github-actions"
-      - "automated"
+      - 'dependencies'
+      - 'github-actions'
+      - 'automated'
     groups:
-      # Group common GitHub Actions
-      common-actions:
+      # Group ALL GitHub Actions updates together
+      all-github-actions:
         patterns:
-          - "actions/*"
-          - "github/*"
+          - '*'
         update-types:
-          - "minor"
-          - "patch"
-      
-      # Group Node.js setup actions
-      nodejs-actions:
-        patterns:
-          - "actions/setup-node"
-          - "pnpm/action-setup"
-        update-types:
-          - "minor"
-          - "patch"
-      
-      # Group security and quality actions
-      security-actions:
-        patterns:
-          - "github/codeql-action/*"
-          - "snyk/actions/*"
-          - "github/super-linter/*"
-        update-types:
-          - "minor"
-          - "patch"
+          - 'minor'
+          - 'patch'
+          - 'major'
 
   # Docker images
-  - package-ecosystem: "docker"
-    directory: "/"
+  - package-ecosystem: 'docker'
+    directory: '/'
     schedule:
-      interval: "daily"
-      time: "00:00"
-      timezone: "UTC"
-    open-pull-requests-limit: 5
+      interval: 'weekly'
+      day: 'thursday'
+      time: '09:00'
+      timezone: 'UTC'
+    open-pull-requests-limit: 2
     reviewers:
-      - "rumankazi"
+      - 'rumankazi'
     assignees:
-      - "rumankazi"
+      - 'rumankazi'
     commit-message:
-      prefix: "docker"
-      include: "scope"
+      prefix: 'docker'
+      include: 'scope'
     labels:
-      - "dependencies"
-      - "docker"
-      - "automated"
+      - 'dependencies'
+      - 'docker'
+      - 'automated'
+    groups:
+      # Group ALL Docker updates together
+      all-docker-updates:
+        patterns:
+          - '*'
+        update-types:
+          - 'minor'
+          - 'patch'
+          - 'major'
