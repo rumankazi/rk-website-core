@@ -45,7 +45,7 @@ RUN pnpm build
 # Ensure .prisma client directory exists and is accessible
 RUN mkdir -p node_modules/.prisma && \
     if [ -d "node_modules/.pnpm" ]; then \
-        find node_modules/.pnpm -name ".prisma" -type d -exec cp -r {} node_modules/ \; 2>/dev/null || true; \
+    find node_modules/.pnpm -name ".prisma" -type d -exec cp -r {} node_modules/ \; 2>/dev/null || true; \
     fi
 
 # ===============================================
