@@ -1,41 +1,16 @@
-name: Release & GitHub Releases
+name: Release
 
 on:
   push:
-    branches: [main]
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-      - '.gitignore'
+    branches:
+      - main
   workflow_dispatch:
     inputs:
-      release_type:
-        description: 'Release type (automatic detection if not specified)'
-        required: false
-        type: choice
-        options:
-          - 'auto'
-          - 'patch'
-          - 'minor'
-          - 'major'
-          - 'prerelease'
-        default: 'auto'
       dry_run:
-        description: 'Dry run (no actual release)'
+        description: 'Run semantic-release in dry-run mode'
         required: false
         default: false
         type: boolean
-      create_draft:
-        description: 'Create as draft release'
-        required: false
-        default: false
-        type: boolean
-
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-  packages: write
 
 # Cancel in-progress runs for the same workflow on the same ref
 concurrency:

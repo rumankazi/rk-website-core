@@ -206,8 +206,9 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # Wait for quality checks to complete before auto-merging
-  wait-for-checks:
+  # Wait for quality checks and auto-merge safe updates
+  auto-merge:
+    name: Auto-merge Safe Updates
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
     needs: [setup, process-update]

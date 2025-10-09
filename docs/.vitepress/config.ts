@@ -1,8 +1,4 @@
 import { defineConfig } from 'vitepress'
-import { fileURLToPath, URL } from 'node:url'
-
-// Get current directory path in ES module
-const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 export default defineConfig({
   title: 'RK Website Core',
