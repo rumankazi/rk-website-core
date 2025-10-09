@@ -1,4 +1,4 @@
-name: Dependabot Auto-Merge
+name: Dependabot Automation
 
 on:
   pull_request:
@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   dependabot:
+    name: Dependabot PR Handler
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
     steps:
@@ -21,95 +22,157 @@ jobs:
         with:
           github-token: '${{ secrets.GITHUB_TOKEN }}'
 
-      - name: Auto-approve patch and minor updates
-        if: |
-          (steps.metadata.outputs.update-type == 'version-update:semver-patch' || 
-           steps.metadata.outputs.update-type == 'version-update:semver-minor') &&
-          contains(fromJson('["direct", "indirect"]'), steps.metadata.outputs.dependency-type)
+      - name: Apply semantic labels and auto-approve
         run: |
-          gh pr review --approve "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Function to ensure label exists and apply it
+          ensure_and_apply_label() {
+            local label_name="$1"
+            local label_color="${2:-0366d6}"
+            local label_description="$3"
+            
+            # Create label if it doesn't exist (ignore error if it already exists)
+            gh label create "$label_name" --color "$label_color" --description "$label_description" 2>/dev/null || true
+            
+            # Apply label to PR
+            gh pr edit "$PR_URL" --add-label "$label_name"
+          }
 
-      - name: Comment on security updates
-        if: steps.metadata.outputs.alert-state == 'OPEN'
-        run: |
-          gh pr comment "$PR_URL" --body "🔒 **Security Update Detected**
+          # Always apply dependabot label
+          ensure_and_apply_label "dependabot" "0366d6" "Dependency update by Dependabot"
 
-          This PR addresses a security vulnerability:
-          - **Package**: ${{ steps.metadata.outputs.dependency-names }}
-          - **Alert State**: ${{ steps.metadata.outputs.alert-state }}
-          - **CVSS Score**: ${{ steps.metadata.outputs.cvss }}
+          # Determine semantic commit type and auto-approval
+          UPDATE_TYPE="${{ steps.metadata.outputs.update-type }}"
+          DEPENDENCY_TYPE="${{ steps.metadata.outputs.dependency-type }}"
+          ALERT_STATE="${{ steps.metadata.outputs.alert-state }}"
 
-          Please review and merge promptly after CI passes."
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Enable auto-merge for approved dependencies
-        if: |
-          (steps.metadata.outputs.update-type == 'version-update:semver-patch' || 
-           steps.metadata.outputs.update-type == 'version-update:semver-minor') &&
-          contains(fromJson('[
-            "@types/node", "@types/react", "@types/react-dom",
-            "prettier", "eslint", "typescript",
-            "tailwindcss", "autoprefixer", "postcss",
-            "vitest", "@vitest/coverage-v8",
-            "@testing-library/react", "@testing-library/jest-dom", "@testing-library/user-event"
-            ]'), steps.metadata.outputs.dependency-names)
-        run: |
-          gh pr merge --auto --squash "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Label based on update type
-        run: |
-          case "${{ steps.metadata.outputs.update-type }}" in
+          case "$UPDATE_TYPE" in
             "version-update:semver-major")
-              gh pr edit "$PR_URL" --add-label "major-update" --add-label "needs-review"
+              # Major updates = breaking changes, need manual review
+              ensure_and_apply_label "breaking-change" "d73a4a" "Major version update - may contain breaking changes"
+              ensure_and_apply_label "needs-review" "fbca04" "Requires manual review before merging"
+              
+              # Add reviewer for major updates
+              gh pr edit "$PR_URL" --add-reviewer "rumankazi"
+              
+              # Comment with conventional commit guidance
+              gh pr comment "$PR_URL" --body "⚠️ **Major Version Update - Breaking Change**
+
+              This dependency update may contain breaking changes:
+              - **Package**: ${{ steps.metadata.outputs.dependency-names }}
+              - **From**: ${{ steps.metadata.outputs.previous-version }}
+              - **To**: ${{ steps.metadata.outputs.new-version }}
+
+              **Semantic Release Integration:**
+              When merging, use a commit message like:
+              \`\`\`
+              feat!: upgrade ${{ steps.metadata.outputs.dependency-names }} to v${{ steps.metadata.outputs.new-version }}
+
+              BREAKING CHANGE: [describe any breaking changes or migration needed]
+              \`\`\`
+
+              This will trigger a major version release automatically via semantic-release.
+
+              **Action Required**: Manual review and testing needed before merge."
               ;;
+              
             "version-update:semver-minor")
-              gh pr edit "$PR_URL" --add-label "minor-update"
+              # Minor updates = new features, auto-approve but may need manual merge title
+              ensure_and_apply_label "enhancement" "0e8a16" "New features or enhancements"
+              ensure_and_apply_label "auto-approved" "28a745" "Automatically approved by Dependabot automation"
+              
+              # Auto-approve minor updates
+              gh pr review --approve "$PR_URL"
+              
+              # Comment with conventional commit guidance
+              gh pr comment "$PR_URL" --body "✨ **Minor Version Update - New Features**
+
+              This dependency update adds new features in a backward-compatible way:
+              - **Package**: ${{ steps.metadata.outputs.dependency-names }}
+              - **From**: ${{ steps.metadata.outputs.previous-version }}
+              - **To**: ${{ steps.metadata.outputs.new-version }}
+
+              **Semantic Release Integration:**
+              The merge will use commit message:
+              \`\`\`
+              feat: upgrade ${{ steps.metadata.outputs.dependency-names }} to v${{ steps.metadata.outputs.new-version }}
+              \`\`\`
+
+              This will trigger a minor version release automatically via semantic-release.
+
+              ✅ **Auto-approved** - Will merge automatically after quality checks pass."
               ;;
+              
             "version-update:semver-patch")
-              gh pr edit "$PR_URL" --add-label "patch-update" --add-label "auto-mergeable"
+              # Patch updates = bug fixes, safe to auto-merge
+              ensure_and_apply_label "bug" "d73a4a" "Bug fixes and patches"
+              ensure_and_apply_label "auto-approved" "28a745" "Automatically approved by Dependabot automation"
+              ensure_and_apply_label "auto-mergeable" "0e8a16" "Safe for automatic merging after checks pass"
+              
+              # Auto-approve patch updates
+              gh pr review --approve "$PR_URL"
+              
+              # Set conventional commit title for semantic-release
+              gh pr edit "$PR_URL" --title "fix: upgrade ${{ steps.metadata.outputs.dependency-names }} to v${{ steps.metadata.outputs.new-version }}"
+              
+              # Comment with semantic-release info
+              gh pr comment "$PR_URL" --body "🐛 **Patch Version Update - Bug Fixes**
+
+              This dependency update includes bug fixes and patches:
+              - **Package**: ${{ steps.metadata.outputs.dependency-names }}
+              - **From**: ${{ steps.metadata.outputs.previous-version }}
+              - **To**: ${{ steps.metadata.outputs.new-version }}
+
+              **Semantic Release Integration:**
+              Commit message will be: \`fix: upgrade ${{ steps.metadata.outputs.dependency-names }} to v${{ steps.metadata.outputs.new-version }}\`
+
+              This will trigger a patch version release automatically via semantic-release.
+
+              ✅ **Auto-approved** - Will merge automatically after quality checks pass."
               ;;
           esac
 
-          if [ "${{ steps.metadata.outputs.alert-state }}" = "OPEN" ]; then
-            gh pr edit "$PR_URL" --add-label "security" --add-label "priority-high"
+          # Handle security updates
+          if [ "$ALERT_STATE" = "OPEN" ]; then
+            ensure_and_apply_label "security" "d73a4a" "Security vulnerability fix"
+            ensure_and_apply_label "priority-high" "b60205" "High priority - requires immediate attention"
+            
+            # Security updates get special handling regardless of semver
+            gh pr comment "$PR_URL" --body "🔒 **Security Update Detected**
+
+            This PR addresses a security vulnerability:
+            - **Package**: ${{ steps.metadata.outputs.dependency-names }}
+            - **Alert State**: ${{ steps.metadata.outputs.alert-state }}
+            - **CVSS Score**: ${{ steps.metadata.outputs.cvss }}
+
+            **Semantic Release Integration:**
+            Security fixes will use commit message:
+            \`\`\`
+            fix(security): upgrade ${{ steps.metadata.outputs.dependency-names }} to v${{ steps.metadata.outputs.new-version }}
+            
+            Addresses security vulnerability with CVSS score: ${{ steps.metadata.outputs.cvss }}
+            \`\`\`
+
+            🚨 **Priority**: Please review and merge promptly after CI passes."
+            
+            # Security updates are always auto-approved
+            gh pr review --approve "$PR_URL"
           fi
+
+          # Apply dependency type label
+          ensure_and_apply_label "dependency-$DEPENDENCY_TYPE" "5319e7" "$DEPENDENCY_TYPE dependency update"
+
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Request review for major updates
-        if: steps.metadata.outputs.update-type == 'version-update:semver-major'
-        run: |
-          gh pr edit "$PR_URL" --add-reviewer "rumankazi"
-          gh pr comment "$PR_URL" --body "⚠️ **Major Version Update**
-
-          This is a major version update that may contain breaking changes:
-          - **Package**: ${{ steps.metadata.outputs.dependency-names }}
-          - **From**: ${{ steps.metadata.outputs.previous-version }}
-          - **To**: ${{ steps.metadata.outputs.new-version }}
-
-          Please review the changelog and test thoroughly before merging.
-
-          **Action Required**: Manual review and approval needed."
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # Wait for quality checks to complete before auto-merging
-  wait-for-checks:
+  # Wait for quality checks and auto-merge safe updates
+  auto-merge:
+    name: Auto-merge Safe Updates
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
     needs: dependabot
+    if: github.actor == 'dependabot[bot]'
     steps:
-      - name: Wait for status checks
+      - name: Wait for quality checks
         uses: fountainhead/action-wait-for-check@v1.2.0
         id: wait-for-checks
         with:
@@ -119,29 +182,33 @@ jobs:
           timeoutSeconds: 1800 # 30 minutes
           intervalSeconds: 30
 
-      - name: Auto-merge if checks pass
+      - name: Auto-merge approved updates
         if: |
           steps.wait-for-checks.outputs.conclusion == 'success' &&
           contains(github.event.pull_request.labels.*.name, 'auto-mergeable')
         run: |
+          echo "✅ Quality checks passed, auto-merging safe dependency update"
           gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Comment on failed checks
-        if: steps.wait-for-checks.outputs.conclusion == 'failure'
+        if: steps.wait-for-checks.outputs.conclusion != 'success'
         run: |
           gh pr comment "$PR_URL" --body "❌ **Quality Checks Failed**
 
           The automated quality checks failed for this dependency update.
-          Please review the failing checks and resolve any issues:
 
-          - Check the [Actions tab](${{ github.server_url }}/${{ github.repository }}/actions) for details
-          - Review any test failures or linting issues
-          - Consider if this update introduces breaking changes
+          **Next Steps:**
+          - Review the [failed checks](${{ github.server_url }}/${{ github.repository }}/actions) for details
+          - Fix any test failures, linting issues, or type errors
+          - Push fixes to this PR branch, or close and let Dependabot recreate
 
-          Manual intervention may be required to resolve conflicts or update code."
+          **Semantic Release Impact:**
+          Once fixed and merged, this will still trigger an appropriate version bump via semantic-release based on the conventional commit message.
+
+          Manual intervention required to resolve issues."
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
