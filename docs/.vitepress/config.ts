@@ -144,10 +144,6 @@ export default defineConfig({
 
   // Vite configuration - Isolated from parent project
   vite: {
-    // Disable PostCSS processing to avoid parent directory config conflicts
-    css: {
-      postcss: false,
-    },
     // Set explicit root and disable config file resolution from parent directories
     root: __dirname,
     configFile: false,
@@ -157,12 +153,11 @@ export default defineConfig({
     resolve: {
       alias: {},
     },
-  },
-
-  // Development server
-  server: {
-    port: 5173,
-    host: true,
+    // Development server configuration
+    server: {
+      port: 5173,
+      host: true,
+    },
   },
 
   // Ignore dead links for localhost URLs during build
