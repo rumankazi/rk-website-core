@@ -1,0 +1,16 @@
+# Performance optimizations
+store-dir=/workspaces/.pnpm-store
+package-import-method=hardlink
+side-effects-cache=true
+prefer-offline=true
+fetch-retries=3
+fetch-retry-factor=2
+fetch-retry-mintimeout=10000
+fetch-retry-maxtimeout=60000
+
+# Workspace settings
+link-workspace-packages=true
+prefer-workspace-packages=true
+
+# Registry settings
+registry=https://registry.npmjs.org/

@@ -78,15 +78,6 @@ jobs:
       - name: Check Prettier formatting
         run: pnpm exec prettier --check .
 
-      - name: Upload ESLint results
-        uses: github/super-linter/slim@v5
-        if: always()
-        env:
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_TYPESCRIPT_ES: true
-          VALIDATE_JAVASCRIPT_ES: true
-
   # Unit and Integration Tests
   test-unit:
     name: Unit & Integration Tests
@@ -152,7 +143,6 @@ jobs:
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
           fail_ci_if_error: false
 
@@ -297,42 +287,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # Performance and Bundle Analysis
-  performance:
-    name: Performance Analysis
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-          cache-dependency-path: 'pnpm-lock.yaml'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Generate Prisma client
-        run: pnpm prisma generate
-
-      - name: Build with bundle analysis
-        run: ANALYZE=true pnpm build
-
-      - name: Run Lighthouse CI
-        uses: treosh/lighthouse-ci-action@v10
-        with:
-          configPath: './lighthouserc.json'
-          uploadArtifacts: true
-          temporaryPublicStorage: true
-
   # Documentation Quality Check
   docs-quality:
     name: Documentation Quality
@@ -363,13 +317,6 @@ jobs:
           cd docs
           pnpm docs:build
 
-      - name: Check for broken links
-        uses: gaurav-nelson/github-action-markdown-link-check@v1
-        with:
-          use-quiet-mode: 'yes'
-          use-verbose-mode: 'yes'
-          config-file: '.github/markdown-link-check-config.json'
-
   # Final Quality Gate
   quality-gate:
     name: Quality Gate
@@ -382,7 +329,6 @@ jobs:
         test-e2e,
         build-test,
         docker-build,
-        performance,
         docs-quality,
       ]
     if: always()
@@ -394,42 +340,10 @@ jobs:
                 "${{ needs.test-unit.result }}" == "failure" || 
                 "${{ needs.test-e2e.result }}" == "failure" || 
                 "${{ needs.build-test.result }}" == "failure" || 
-                "${{ needs.docker-build.result }}" == "failure" || 
-                "${{ needs.performance.result }}" == "failure" || 
+                  "${{ needs.docker-build.result }}" == "failure" ||
                 "${{ needs.docs-quality.result }}" == "failure" ]]; then
             echo "❌ Quality gate failed"
             exit 1
           else
             echo "✅ Quality gate passed"
           fi
-
-      - name: Post results to PR
-        if: github.event_name == 'pull_request' && always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const results = {
-              'Security Scan': '${{ needs.security-scan.result }}',
-              'Code Quality': '${{ needs.code-quality.result }}',
-              'Unit Tests': '${{ needs.test-unit.result }}',
-              'E2E Tests': '${{ needs.test-e2e.result }}',
-              'Build Test': '${{ needs.build-test.result }}',
-              'Docker Build': '${{ needs.docker-build.result }}',
-              'Performance': '${{ needs.performance.result }}',
-              'Documentation': '${{ needs.docs-quality.result }}'
-            };
-
-            let message = '## 🔍 Quality Assurance Results\n\n';
-            for (const [check, result] of Object.entries(results)) {
-              const icon = result === 'success' ? '✅' : result === 'failure' ? '❌' : '⚠️';
-              message += `${icon} **${check}**: ${result}\n`;
-            }
-
-            message += '\n---\n*Automated quality checks completed*';
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: message
-            });

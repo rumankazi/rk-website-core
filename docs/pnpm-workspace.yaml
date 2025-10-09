@@ -1,0 +1,6 @@
+# Docs workspace configuration
+packages:
+  - '.'
+
+onlyBuiltDependencies:
+  - esbuild

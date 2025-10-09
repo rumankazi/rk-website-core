@@ -2,14 +2,7 @@ name: Dependabot Auto-Merge
 
 on:
   pull_request:
-    - name: Enable auto-merge for grouped updates
-      if: |
-        (steps.metadata.outputs.update-type == 'version-update:semver-patch' || 
-         steps.metadata.outputs.update-type == 'version-update:semver-minor') &&
-        (contains(github.event.pull_request.title, 'all-minor-patch') ||
-         contains(github.event.pull_request.title, 'all-docs-updates') ||
-         contains(github.event.pull_request.title, 'all-github-actions') ||
-         contains(github.event.pull_request.title, 'all-docker-updates'))[opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 permissions:
   contents: write
@@ -100,7 +93,7 @@ jobs:
 
           This is a major version update that may contain breaking changes:
           - **Package**: ${{ steps.metadata.outputs.dependency-names }}
-          - **From**: ${{ steps.metadata.outputs.old-version }}
+          - **From**: ${{ steps.metadata.outputs.previous-version }}
           - **To**: ${{ steps.metadata.outputs.new-version }}
 
           Please review the changelog and test thoroughly before merging.

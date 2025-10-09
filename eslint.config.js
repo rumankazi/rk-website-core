@@ -10,14 +10,7 @@ const compat = new FlatCompat({
 })
 
 const eslintConfig = [
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
-  {
-    rules: {
-      '@typescript-eslint/no-unused-vars': 'error',
-      '@typescript-eslint/no-explicit-any': 'warn',
-      'prefer-const': 'error',
-    },
-  },
+  // Global ignores - must come first
   {
     ignores: [
       'node_modules/',
@@ -32,9 +25,26 @@ const eslintConfig = [
       'docs/.vitepress/cache/',
       'playwright-report/',
       'test-results/',
-      '*.config.js',
-      '*.config.ts',
     ],
+  },
+  // Next.js recommended config
+  ...compat.extends('next/core-web-vitals'),
+  ...compat.extends('next/typescript'),
+  // Custom rules
+  {
+    files: ['**/*.{js,jsx,ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'prefer-const': 'error',
+    },
+  },
+  // Config files can have looser rules
+  {
+    files: ['*.config.{js,ts}', '**/*.config.{js,ts}'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
   },
 ]
 

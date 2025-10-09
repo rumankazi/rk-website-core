@@ -1,4 +1,8 @@
 import { defineConfig } from 'vitepress'
+import { fileURLToPath, URL } from 'node:url'
+
+// Get current directory path in ES module
+const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 export default defineConfig({
   title: 'RK Website Core',
@@ -139,13 +143,31 @@ export default defineConfig({
   ],
 
   // Build configuration
-  outDir: '../dist/docs',
+  outDir: '.vitepress/dist',
   cacheDir: '.vitepress/cache',
 
-  // Development server
-  server: {
-    port: 5173,
-    host: true,
+  // Vite configuration - Isolated from parent project
+  vite: {
+    // Set explicit root and disable config file resolution from parent directories
+    root: __dirname,
+    configFile: false,
+    // Ensure clean build environment
+    clearScreen: false,
+    // Disable PostCSS processing completely to avoid configuration conflicts
+    css: {
+      postcss: {
+        plugins: [],
+      },
+    },
+    // Prevent resolution of dependencies from parent
+    resolve: {
+      alias: {},
+    },
+    // Development server configuration
+    server: {
+      port: 5173,
+      host: true,
+    },
   },
 
   // Ignore dead links for localhost URLs during build
