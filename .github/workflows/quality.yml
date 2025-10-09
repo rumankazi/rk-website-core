@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [main, develop]
 
+permissions:
+  contents: read
+  actions: read
+  checks: read
+  pull-requests: read
+
 # Cancel in-progress runs for the same workflow on the same ref
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
