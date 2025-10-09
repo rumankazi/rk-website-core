@@ -139,8 +139,25 @@ export default defineConfig({
   ],
 
   // Build configuration
-  outDir: '../dist/docs',
+  outDir: '.vitepress/dist',
   cacheDir: '.vitepress/cache',
+
+  // Vite configuration - Isolated from parent project
+  vite: {
+    // Disable PostCSS processing to avoid parent directory config conflicts
+    css: {
+      postcss: false,
+    },
+    // Set explicit root and disable config file resolution from parent directories
+    root: __dirname,
+    configFile: false,
+    // Ensure clean build environment
+    clearScreen: false,
+    // Prevent resolution of dependencies from parent
+    resolve: {
+      alias: {},
+    },
+  },
 
   // Development server
   server: {

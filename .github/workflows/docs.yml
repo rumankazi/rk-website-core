@@ -58,12 +58,29 @@ jobs:
       - name: Build documentation with VitePress
         run: |
           cd docs
-          pnpm docs:build
+          # Clear any parent workspace context
+          unset PNPM_HOME
+          # Build with explicit configuration isolation
+          NODE_ENV=production pnpm docs:build --outDir .vitepress/dist
+        env:
+          # Prevent VitePress from searching parent directories for config files
+          VITE_CWD: ${{ github.workspace }}/docs
+          # Disable telemetry and other external dependencies
+          DISABLE_OPENCOLLECTIVE: true
+          ADBLOCK: true
+
+      - name: Verify build output
+        run: |
+          cd docs
+          echo "Build output contents:"
+          ls -la .vitepress/dist/
+          echo "Index file exists:"
+          test -f .vitepress/dist/index.html && echo "✅ index.html found" || echo "❌ index.html missing"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist/docs
+          path: docs/.vitepress/dist
 
   # Deployment job (only on main branch)
   deploy-docs:
