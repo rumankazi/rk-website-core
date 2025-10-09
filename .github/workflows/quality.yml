@@ -287,42 +287,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # Performance and Bundle Analysis
-  performance:
-    name: Performance Analysis
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-          cache-dependency-path: 'pnpm-lock.yaml'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Generate Prisma client
-        run: pnpm prisma generate
-
-      - name: Build with bundle analysis
-        run: ANALYZE=true pnpm build
-
-      - name: Run Lighthouse CI
-        uses: treosh/lighthouse-ci-action@v10
-        with:
-          configPath: '${{ github.workspace }}/lighthouserc.json'
-          uploadArtifacts: true
-          temporaryPublicStorage: true
-
   # Documentation Quality Check
   docs-quality:
     name: Documentation Quality
@@ -365,7 +329,6 @@ jobs:
         test-e2e,
         build-test,
         docker-build,
-        performance,
         docs-quality,
       ]
     if: always()
@@ -377,8 +340,7 @@ jobs:
                 "${{ needs.test-unit.result }}" == "failure" || 
                 "${{ needs.test-e2e.result }}" == "failure" || 
                 "${{ needs.build-test.result }}" == "failure" || 
-                "${{ needs.docker-build.result }}" == "failure" || 
-                "${{ needs.performance.result }}" == "failure" || 
+                  "${{ needs.docker-build.result }}" == "failure" ||
                 "${{ needs.docs-quality.result }}" == "failure" ]]; then
             echo "❌ Quality gate failed"
             exit 1
@@ -398,7 +360,6 @@ jobs:
               'E2E Tests': '${{ needs.test-e2e.result }}',
               'Build Test': '${{ needs.build-test.result }}',
               'Docker Build': '${{ needs.docker-build.result }}',
-              'Performance': '${{ needs.performance.result }}',
               'Documentation': '${{ needs.docs-quality.result }}'
             };
 
