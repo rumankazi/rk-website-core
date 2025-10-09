@@ -149,6 +149,12 @@ export default defineConfig({
     configFile: false,
     // Ensure clean build environment
     clearScreen: false,
+    // Disable PostCSS processing completely to avoid configuration conflicts
+    css: {
+      postcss: {
+        plugins: [],
+      },
+    },
     // Prevent resolution of dependencies from parent
     resolve: {
       alias: {},
