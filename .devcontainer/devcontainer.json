@@ -24,7 +24,6 @@
         "ms-playwright.playwright",
 
         // Git & GitHub
-        "eamodio.gitlens",
         "github.vscode-github-actions",
         "github.copilot",
 
@@ -90,6 +89,20 @@
         // Terminal
         "terminal.integrated.defaultProfile.linux": "bash",
 
+        // Performance optimizations
+        "typescript.disableAutomaticTypeAcquisition": true,
+        "typescript.preferences.includePackageJsonAutoImports": "off",
+        "search.followSymlinks": false,
+        "search.useIgnoreFiles": true,
+        "files.watcherExclude": {
+          "**/.git/objects/**": true,
+          "**/.git/subtree-cache/**": true,
+          "**/node_modules/**": true,
+          "**/.next/**": true,
+          "**/dist/**": true,
+          "**/coverage/**": true
+        },
+
         // Git
         "git.autofetch": true,
         "git.confirmSync": false,
@@ -122,12 +135,24 @@
   },
 
   // Post-create commands to set up development environment
-  "postCreateCommand": "npm install -g pnpm && echo 'DevContainer ready! Run: pnpm install && pnpm dev'",
+  "postCreateCommand": "bash .devcontainer/fix-permissions.sh && npm install -g pnpm@latest && pnpm config set store-dir /workspaces/.pnpm-store && echo 'DevContainer ready! Run: pnpm install && pnpm dev'",
+
+  // Container resource optimization
+  "runArgs": ["--cpus=4", "--memory=8g", "--shm-size=2g"],
+
+  // Mount optimizations for better performance
+  "mounts": [
+    "source=rk-website-pnpm-store,target=/workspaces/.pnpm-store,type=volume",
+    "source=rk-website-node-modules,target=/workspaces/rk-website-core/node_modules,type=volume"
+  ],
 
   // Features to add to the container
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "moby": true,
+      "dockerDashComposeVersion": "v2"
+    }
   },
 
   "remoteUser": "node"

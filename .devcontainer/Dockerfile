@@ -2,13 +2,26 @@
 ARG VARIANT=20-bullseye
 FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:${VARIANT}
 
-# [Optional] Uncomment this section to install additional OS packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#     && apt-get -y install --no-install-recommends <your-package-list-here>
+# Install performance optimization packages
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends \
+    # Performance monitoring tools
+    htop \
+    # Fast file operations
+    rsync \
+    # Better terminal experience
+    zsh \
+    # Clean up
+    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
-# [Optional] Uncomment if you want to install an additional version of node using nvm
-# ARG EXTRA_NODE_VERSION=10
-# RUN su node -c "source /usr/local/share/nvm/nvm.sh && nvm install ${EXTRA_NODE_VERSION}"
+# Install latest pnpm with performance optimizations
+RUN su node -c "npm install -g pnpm@latest" \
+    && su node -c "pnpm config set store-dir /workspaces/.pnpm-store" \
+    && su node -c "pnpm config set package-import-method hardlink" \
+    && su node -c "pnpm config set side-effects-cache true" \
+    && su node -c "pnpm config set prefer-offline true"
 
-# [Optional] Uncomment if you want to install more global node packages
-# RUN su node -c "npm install -g <your-package-list -here>"
+# Configure git for better performance
+RUN su node -c "git config --global core.preloadindex true" \
+    && su node -c "git config --global core.fscache true" \
+    && su node -c "git config --global gc.auto 256"

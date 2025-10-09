@@ -78,15 +78,6 @@ jobs:
       - name: Check Prettier formatting
         run: pnpm exec prettier --check .
 
-      - name: Upload ESLint results
-        uses: github/super-linter/slim@v5
-        if: always()
-        env:
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_TYPESCRIPT_ES: true
-          VALIDATE_JAVASCRIPT_ES: true
-
   # Unit and Integration Tests
   test-unit:
     name: Unit & Integration Tests

@@ -1,0 +1,8 @@
+{
+  "benchmark_info": {
+    "timestamp": "20251009_154418",
+    "node_version": "v20.19.4",
+    "pnpm_version": "10.18.1",
+    "cpu_cores": 24,
+    "memory_gb": "11Gi"
+  },
