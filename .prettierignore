@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+**/pnpm-lock.yaml
+**/package-lock.json
+**/yarn.lock
+
+# Build outputs
+.next/
+dist/
+build/
+out/
+
+# Generated files
+.tsbuildinfo
+coverage/
+playwright-report/
+test-results/
+
+# Logs
+*.log
+logs/
+
+# Cache directories
+.cache/
+.eslintcache
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.test
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/settings.json
+.idea/
+
+# Database
+*.db
+*.sqlite
+
+# Documentation build
+docs/.vitepress/dist/
+docs/.vitepress/cache/
