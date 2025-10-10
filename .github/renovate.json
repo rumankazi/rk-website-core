@@ -15,99 +15,99 @@
     },
     {
       "description": "Group React ecosystem updates",
-      "matchPackagePatterns": ["^react", "^@types/react"],
       "groupName": "React ecosystem",
-      "groupSlug": "react-ecosystem"
+      "groupSlug": "react-ecosystem",
+      "matchPackageNames": ["/^react/", "/^@types/react/"]
     },
     {
       "description": "Group Next.js and related packages",
-      "matchPackagePatterns": ["^next", "^@next/", "eslint-config-next"],
       "groupName": "Next.js ecosystem",
-      "groupSlug": "nextjs-ecosystem"
+      "groupSlug": "nextjs-ecosystem",
+      "matchPackageNames": ["/^next/", "/^@next//", "/eslint-config-next/"]
     },
     {
       "description": "Group TypeScript and related packages",
-      "matchPackagePatterns": [
-        "^typescript",
-        "^@typescript-eslint/",
-        "^@types/"
-      ],
       "groupName": "TypeScript ecosystem",
-      "groupSlug": "typescript-ecosystem"
+      "groupSlug": "typescript-ecosystem",
+      "matchPackageNames": [
+        "/^typescript/",
+        "/^@typescript-eslint//",
+        "/^@types//"
+      ]
     },
     {
       "description": "Group testing packages",
-      "matchPackagePatterns": [
-        "^@testing-library/",
-        "^@playwright/",
-        "^vitest",
-        "^@vitest/",
-        "playwright",
-        "jsdom"
-      ],
       "groupName": "Testing packages",
-      "groupSlug": "testing-packages"
+      "groupSlug": "testing-packages",
+      "matchPackageNames": [
+        "/^@testing-library//",
+        "/^@playwright//",
+        "/^vitest/",
+        "/^@vitest//",
+        "/playwright/",
+        "/jsdom/"
+      ]
     },
     {
       "description": "Group linting and formatting packages",
-      "matchPackagePatterns": [
-        "^eslint",
-        "^@eslint/",
-        "^prettier",
-        "prettier-plugin-"
-      ],
       "groupName": "Linting and formatting",
-      "groupSlug": "linting-formatting"
+      "groupSlug": "linting-formatting",
+      "matchPackageNames": [
+        "/^eslint/",
+        "/^@eslint//",
+        "/^prettier/",
+        "/prettier-plugin-/"
+      ]
     },
     {
       "description": "Group Prisma packages",
-      "matchPackagePatterns": ["^prisma", "^@prisma/"],
       "groupName": "Prisma ORM",
-      "groupSlug": "prisma-orm"
+      "groupSlug": "prisma-orm",
+      "matchPackageNames": ["/^prisma/", "/^@prisma//"]
     },
     {
       "description": "Group Auth.js packages",
-      "matchPackagePatterns": ["^next-auth", "^@auth/"],
       "groupName": "Auth.js",
-      "groupSlug": "auth-js"
+      "groupSlug": "auth-js",
+      "matchPackageNames": ["/^next-auth/", "/^@auth//"]
     },
     {
       "description": "Group Tailwind CSS packages",
-      "matchPackagePatterns": [
-        "^tailwindcss",
-        "^@tailwindcss/",
-        "tailwind-",
-        "^autoprefixer",
-        "^postcss"
-      ],
       "groupName": "Tailwind CSS ecosystem",
-      "groupSlug": "tailwind-ecosystem"
+      "groupSlug": "tailwind-ecosystem",
+      "matchPackageNames": [
+        "/^tailwindcss/",
+        "/^@tailwindcss//",
+        "/tailwind-/",
+        "/^autoprefixer/",
+        "/^postcss/"
+      ]
     },
     {
       "description": "Group Radix UI packages",
-      "matchPackagePatterns": ["^@radix-ui/"],
       "groupName": "Radix UI components",
-      "groupSlug": "radix-ui"
+      "groupSlug": "radix-ui",
+      "matchPackageNames": ["/^@radix-ui//"]
     },
     {
       "description": "Group build and dev tools",
-      "matchPackagePatterns": [
-        "^@vitejs/",
-        "^vite",
-        "^tsx",
-        "^semantic-release",
-        "^@semantic-release/",
-        "^husky",
-        "^lint-staged",
-        "^@commitlint/"
-      ],
       "groupName": "Build and dev tools",
-      "groupSlug": "build-dev-tools"
+      "groupSlug": "build-dev-tools",
+      "matchPackageNames": [
+        "/^@vitejs//",
+        "/^vite/",
+        "/^tsx/",
+        "/^semantic-release/",
+        "/^@semantic-release//",
+        "/^husky/",
+        "/^lint-staged/",
+        "/^@commitlint//"
+      ]
     }
   ],
   "major": {
     "dependencyDashboard": true,
-    "stabilityDays": 3
+    "minimumReleaseAge": "3 days"
   },
   "vulnerabilityAlerts": {
     "labels": ["security", "priority-high"],
