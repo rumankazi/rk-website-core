@@ -1,5 +1,5 @@
 # Multi-stage Dockerfile for production deployment
-FROM node:20-alpine AS deps
+FROM node:24-alpine AS deps
 WORKDIR /app
 
 # Install system dependencies and pnpm
@@ -18,7 +18,7 @@ RUN pnpm prisma generate
 
 # ===============================================
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 WORKDIR /app
 
 # Install system dependencies and pnpm
@@ -50,7 +50,7 @@ RUN mkdir -p node_modules/.prisma && \
 
 # ===============================================
 # Production stage
-FROM node:20-alpine AS runner
+FROM node:24-alpine AS runner
 WORKDIR /app
 
 # Install system dependencies including curl for health checks
