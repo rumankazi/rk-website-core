@@ -3,10 +3,8 @@ name: Workflow Security Analysis
 on:
   push:
     branches: [main, develop]
-    paths: ['.github/workflows/**', '.github/dependabot.yml']
   pull_request:
     branches: [main, develop]
-    paths: ['.github/workflows/**', '.github/dependabot.yml']
   schedule:
     # Run weekly on Sundays at 2 AM UTC
     - cron: '0 2 * * 0'
