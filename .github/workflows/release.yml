@@ -31,7 +31,7 @@ jobs:
     steps:
       - name: Get latest workflow run
         id: workflow
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const { data: runs } = await github.rest.actions.listWorkflowRuns({
