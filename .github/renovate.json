@@ -58,7 +58,7 @@
         "/^@eslint//",
         "/^prettier/",
         "/prettier-plugin-/"
-      ]
+      ],
       "automerge": true
     },
     {
