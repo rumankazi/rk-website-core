@@ -11,7 +11,8 @@
       "description": "Group all non-major dependencies",
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "all non-major dependencies",
-      "groupSlug": "all-minor-patch"
+      "groupSlug": "all-minor-patch",
+      "automerge": true
     },
     {
       "description": "Group React ecosystem updates",
@@ -57,7 +58,8 @@
         "/^@eslint//",
         "/^prettier/",
         "/prettier-plugin-/"
-      ]
+      ],
+      "automerge": true
     },
     {
       "description": "Group Prisma packages",
@@ -115,7 +117,8 @@
   },
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": ["before 6am on Monday"]
+    "schedule": ["before 6am on Monday"],
+    "automerge": true
   },
   "prHourlyLimit": 3,
   "prConcurrentLimit": 5,
