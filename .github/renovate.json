@@ -1,4 +1,123 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"]
+  "extends": ["config:recommended"],
+  "timezone": "Europe/Amsterdam",
+  "schedule": ["before 6am on Monday"],
+  "labels": ["dependencies", "renovate"],
+  "assignees": ["rumankazi"],
+  "reviewers": ["rumankazi"],
+  "packageRules": [
+    {
+      "description": "Group all non-major dependencies",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch"
+    },
+    {
+      "description": "Group React ecosystem updates",
+      "matchPackagePatterns": ["^react", "^@types/react"],
+      "groupName": "React ecosystem",
+      "groupSlug": "react-ecosystem"
+    },
+    {
+      "description": "Group Next.js and related packages",
+      "matchPackagePatterns": ["^next", "^@next/", "eslint-config-next"],
+      "groupName": "Next.js ecosystem",
+      "groupSlug": "nextjs-ecosystem"
+    },
+    {
+      "description": "Group TypeScript and related packages",
+      "matchPackagePatterns": [
+        "^typescript",
+        "^@typescript-eslint/",
+        "^@types/"
+      ],
+      "groupName": "TypeScript ecosystem",
+      "groupSlug": "typescript-ecosystem"
+    },
+    {
+      "description": "Group testing packages",
+      "matchPackagePatterns": [
+        "^@testing-library/",
+        "^@playwright/",
+        "^vitest",
+        "^@vitest/",
+        "playwright",
+        "jsdom"
+      ],
+      "groupName": "Testing packages",
+      "groupSlug": "testing-packages"
+    },
+    {
+      "description": "Group linting and formatting packages",
+      "matchPackagePatterns": [
+        "^eslint",
+        "^@eslint/",
+        "^prettier",
+        "prettier-plugin-"
+      ],
+      "groupName": "Linting and formatting",
+      "groupSlug": "linting-formatting"
+    },
+    {
+      "description": "Group Prisma packages",
+      "matchPackagePatterns": ["^prisma", "^@prisma/"],
+      "groupName": "Prisma ORM",
+      "groupSlug": "prisma-orm"
+    },
+    {
+      "description": "Group Auth.js packages",
+      "matchPackagePatterns": ["^next-auth", "^@auth/"],
+      "groupName": "Auth.js",
+      "groupSlug": "auth-js"
+    },
+    {
+      "description": "Group Tailwind CSS packages",
+      "matchPackagePatterns": [
+        "^tailwindcss",
+        "^@tailwindcss/",
+        "tailwind-",
+        "^autoprefixer",
+        "^postcss"
+      ],
+      "groupName": "Tailwind CSS ecosystem",
+      "groupSlug": "tailwind-ecosystem"
+    },
+    {
+      "description": "Group Radix UI packages",
+      "matchPackagePatterns": ["^@radix-ui/"],
+      "groupName": "Radix UI components",
+      "groupSlug": "radix-ui"
+    },
+    {
+      "description": "Group build and dev tools",
+      "matchPackagePatterns": [
+        "^@vitejs/",
+        "^vite",
+        "^tsx",
+        "^semantic-release",
+        "^@semantic-release/",
+        "^husky",
+        "^lint-staged",
+        "^@commitlint/"
+      ],
+      "groupName": "Build and dev tools",
+      "groupSlug": "build-dev-tools"
+    }
+  ],
+  "major": {
+    "dependencyDashboard": true,
+    "stabilityDays": 3
+  },
+  "vulnerabilityAlerts": {
+    "labels": ["security", "priority-high"],
+    "assignees": ["rumankazi"]
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on Monday"]
+  },
+  "prHourlyLimit": 3,
+  "prConcurrentLimit": 5,
+  "branchConcurrentLimit": 10
 }
