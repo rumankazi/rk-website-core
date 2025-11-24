@@ -26,7 +26,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Run Zizmor security analysis
-        uses: zizmorcore/zizmor-action@v0.2.0
+        uses: zizmorcore/zizmor-action@v0.3.0
         with:
           # Run on all workflow files in the repository
           inputs: '.github/workflows/'
